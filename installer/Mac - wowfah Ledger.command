@@ -5,12 +5,18 @@
 HERE="$(cd "$(dirname "$0")" && pwd)"
 SRC="$HERE/WowfahLedger"
 WOW=""
+FL="_forever_"
 
 try() {   # sets WOW when the folder given (or the one above it) contains _forever_
   [ -n "$WOW" ] && return
   local p="${1%/}"
   [ -z "$p" ] && return
-  if [ -d "$p/_forever_" ]; then WOW="$p"; elif [ -d "$(dirname "$p")/_forever_" ]; then WOW="$(dirname "$p")"; fi
+  local up; up="$(dirname "$p")"
+  for name in _forever_ forever; do
+    [ -n "$WOW" ] && break
+    if [ -d "$p/$name" ] && { [ "$name" = "_forever_" ] || [ -d "$p/$name/Interface" ]; }; then WOW="$p"; FL="$name"
+    elif [ -d "$up/$name" ] && { [ "$name" = "_forever_" ] || [ -d "$up/$name/Interface" ]; }; then WOW="$up"; FL="$name"; fi
+  done
 }
 
 echo
@@ -44,7 +50,7 @@ if [ -z "$WOW" ]; then
   fi
 fi
 
-echo "  Game found: $WOW/_forever_"
+echo "  Game found: $WOW/$FL"
 echo
 echo "  1  Install or update the addon"
 echo "  2  Find my ledger file and open the upload page"
@@ -54,7 +60,7 @@ read -r -p "  Choose 1, 2 or 3 and press Return [1]: " PICK
 case "${PICK:-1}" in
   2)
     FILES=()
-    while IFS= read -r f; do FILES+=("$f"); done < <(find "$WOW/_forever_/WTF/Account" -name "WowfahLedger.lua" -path "*SavedVariables*" 2>/dev/null)
+    while IFS= read -r f; do FILES+=("$f"); done < <(find "$WOW/$FL/WTF/Account" -name "WowfahLedger.lua" -path "*SavedVariables*" 2>/dev/null)
     if [ ${#FILES[@]} -eq 0 ]; then
       echo; echo "  No ledger file yet. The game writes it when you log out or type /reload"
       echo "  with the addon turned on. Do that, then choose 2 again."
@@ -73,7 +79,7 @@ case "${PICK:-1}" in
       echo "  Nothing was changed. You can also install by hand: https://wowfah.com/addon"; echo
       exit 1
     fi
-    DEST="$WOW/_forever_/Interface/AddOns"
+    DEST="$WOW/$FL/Interface/AddOns"
     if mkdir -p "$DEST" && rm -rf "$DEST/WowfahLedger" && cp -R "$SRC" "$DEST/WowfahLedger" && [ -f "$DEST/WowfahLedger/WowfahLedger.toc" ]; then
       echo; echo "  Installed to $DEST/WowfahLedger"; echo
       echo "  Next:"

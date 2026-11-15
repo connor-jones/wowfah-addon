@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1
+
+The installers accept the game folder under either name guides give for it (`_forever_` or `forever`).
+
 ## 0.2.0
 
 The download now includes an installer for Windows and for Mac. It finds the game folder, copies the

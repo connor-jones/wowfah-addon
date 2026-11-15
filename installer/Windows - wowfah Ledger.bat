@@ -7,6 +7,7 @@ title wowfah Ledger
 set "HERE=%~dp0"
 set "SRC=!HERE!WowfahLedger"
 set "WOW="
+set "FL=_forever_"
 
 echo.
 echo   wowfah Ledger
@@ -36,7 +37,7 @@ if not defined WOW (
 )
 
 :menu
-echo   Game found: !WOW!\_forever_
+echo   Game found: !WOW!\!FL!
 echo.
 echo   1  Install or update the addon
 echo   2  Find my ledger file and open the upload page
@@ -55,7 +56,7 @@ if not exist "!SRC!\WowfahLedger.toc" (
   echo   Unzip the whole download first: right click the zip, Extract All. Then run this again.
   goto :fail
 )
-set "DEST=!WOW!\_forever_\Interface\AddOns"
+set "DEST=!WOW!\!FL!\Interface\AddOns"
 if not exist "!DEST!\" mkdir "!DEST!" 2>nul
 if exist "!DEST!\WowfahLedger\" rmdir /s /q "!DEST!\WowfahLedger" 2>nul
 xcopy "!SRC!" "!DEST!\WowfahLedger\" /E /I /Q /Y >nul 2>nul
@@ -81,7 +82,7 @@ goto :end
 :upload
 set "FOUND="
 set "MANY="
-for /f "delims=" %%F in ('dir /b /s "!WOW!\_forever_\WTF\Account\WowfahLedger.lua" 2^>nul') do (
+for /f "delims=" %%F in ('dir /b /s "!WOW!\!FL!\WTF\Account\WowfahLedger.lua" 2^>nul') do (
   if defined FOUND set "MANY=1"
   if not defined FOUND set "FOUND=%%F"
 )
@@ -117,14 +118,18 @@ for %%L in (C D E F G H I J) do (
 exit /b
 
 :try
-rem Sets WOW when the folder given (or the one above it) contains _forever_.
+rem Sets WOW when the folder given (or the one above it) holds the Forever game folder (_forever_, or forever).
 if defined WOW exit /b
 set "P=%~1"
 if not defined P exit /b
 if "!P:~-1!"=="\" set "P=!P:~0,-1!"
-if exist "!P!\_forever_\" set "WOW=!P!"
+if exist "!P!\forever\Interface\" set "WOW=!P!" & set "FL=forever"
+if exist "!P!\_forever_\" set "WOW=!P!" & set "FL=_forever_"
 if defined WOW exit /b
-for %%D in ("!P!\..") do if exist "%%~fD\_forever_\" set "WOW=%%~fD"
+for %%D in ("!P!\..") do (
+  if exist "%%~fD\forever\Interface\" set "WOW=%%~fD" & set "FL=forever"
+  if exist "%%~fD\_forever_\" set "WOW=%%~fD" & set "FL=_forever_"
+)
 exit /b
 
 :fail
