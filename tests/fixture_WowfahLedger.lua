@@ -1,6 +1,6 @@
 
 WowfahLedgerDB = {
-	["addon"] = "0.1.0",
+	["addon"] = "0.2.0",
 	["chars"] = {
 		["Thrall-ForeverPvE1"] = "3|Horde|1|0|0|18|1794754300",
 	},

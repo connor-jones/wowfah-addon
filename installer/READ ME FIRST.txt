@@ -1,0 +1,28 @@
+wowfah Ledger
+=============
+Tracks your World of Warcraft: Forever auction house sales and profit.
+
+TO INSTALL
+  Windows:  double click "Windows - wowfah Ledger.bat" and choose 1.
+            If Windows shows "Windows protected your PC", click More info, then Run anyway.
+  Mac:      double click "Mac - wowfah Ledger.command" and choose 1.
+            If macOS blocks it, open System Settings, Privacy and Security, and click Open Anyway.
+
+  The installer only copies the WowfahLedger folder into
+  World of Warcraft/_forever_/Interface/AddOns. Both files are plain text: open them in
+  Notepad or TextEdit to see exactly what they do.
+
+  Prefer to do it by hand? Copy the WowfahLedger folder there yourself.
+
+THEN
+  1. Start the game. On the character screen click AddOns and tick wowfah Ledger.
+  2. In game, type /wowfah
+  3. Play as normal. Sales and purchases are recorded as you collect auction house mail.
+
+TO SEE YOUR HISTORY ON WOWFAH.COM
+  1. Log out or type /reload so the game saves the addon's file.
+  2. Run the same file again and choose 2. It finds the file and opens the upload page.
+     Or type /wowfah export in game and paste the code at https://wowfah.com/ledger/upload
+
+Full guide and help: https://wowfah.com/addon
+Not affiliated with Blizzard Entertainment.
