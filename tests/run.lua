@@ -51,20 +51,30 @@ RETRIEVING_DATA = "Retrieving data"
 
 local inbox = {}
 GetInboxNumItems = function() return #inbox end
+local function stacks(m)
+  if m.items then return m.items end
+  return m.item and { m.item } or {}
+end
+local function nstacks(m) local n = 0; for _ in pairs(stacks(m)) do n = n + 1 end; return n end
 GetInboxHeaderInfo = function(i)
   local m = inbox[i]; if not m then return nil end
-  return nil, nil, "Auction House", m.subject, m.money or 0, 0, m.daysLeft or 29.5, m.item and 1 or 0
+  return nil, nil, "Auction House", m.subject, m.money or 0, 0, m.daysLeft or 29.5, nstacks(m)
 end
 GetInboxInvoiceInfo = function(i)
   local m = inbox[i]; if not (m and m.invoice) then return nil end
   local v = m.invoice
   return v.type, v.name, nil, v.bid, v.buyout, v.deposit, v.cut, 0, 0, 0, v.count
 end
-GetInboxItem = function(i) local m = inbox[i]; if m and m.item then return m.item.name, nil, nil, m.item.count end end
-GetInboxItemLink = function(i) local m = inbox[i]; if m and m.item then return "|Hitem:" .. m.item.id .. "::::|h[" .. m.item.name .. "]|h" end end
+GetInboxItem = function(i, a) local m = inbox[i]; local it = m and stacks(m)[a or 1]; if it then return it.name, nil, nil, it.count end end
+GetInboxItemLink = function(i, a) local m = inbox[i]; local it = m and stacks(m)[a or 1]; if it then return "|Hitem:" .. it.id .. "::::|h[" .. it.name .. "]|h" end end
+local bagsFull = false
 TakeInboxMoney = function(i) if inbox[i] then inbox[i].money = 0 end end
-TakeInboxItem = function(i) if inbox[i] then inbox[i].item = nil end end
-AutoLootMailItem = function(i) end
+TakeInboxItem = function(i, a)
+  local m = inbox[i]
+  if not m or bagsFull then return end
+  if m.items then m.items[a or 1] = nil else m.item = nil end
+end
+AutoLootMailItem = function(i) if inbox[i] and not bagsFull then inbox[i].item, inbox[i].items = nil, nil end end
 DeleteInboxItem = function(i) table.remove(inbox, i) end
 
 local created
@@ -134,9 +144,12 @@ inbox = {
   { subject = "Retrieving data" },
 }
 fire("MAIL_SHOW")
-TakeInboxMoney(1)                       -- pending notice: nothing to record
+local function update() fire("MAIL_INBOX_UPDATE") end
+TakeInboxMoney(1); update()             -- pending notice: nothing to record
 check("pending sale ignored", #events("sale"), 0)
 TakeInboxMoney(2)
+check("nothing recorded until the money has left the mail", #events("sale"), 0)
+update()
 local sale = events("sale")[1]
 check("sale recorded", sale ~= nil, true)
 check("sale item id from posting", sale[4], "3860")
@@ -145,56 +158,112 @@ check("sale gross", sale[7], "22000")
 check("sale cut", sale[9], "1100")
 check("sale net of cut", sale[10], "20900")
 check("sale auction id", sale[11], "555002")
-fire("MAIL_INBOX_UPDATE")               -- the same mail is still listed until it is deleted
-TakeInboxMoney(2)
+update()                                -- the emptied mail is still listed until it is deleted
+TakeInboxMoney(2); update()
 check("sale not counted twice", #events("sale"), 1)
-TakeInboxItem(3, 1)
+bagsFull = true
+TakeInboxItem(3, 1); update()           -- bags full: the item stays in the mail
+check("failed take records nothing", #events("purchase"), 0)
+now = now + 80
+bagsFull = false
+TakeInboxItem(3, 1); update()
+check("retry after a failed take counts once", #events("purchase"), 1)
 local buy = events("purchase")[1]
 check("purchase recorded", buy and buy[4], "4306")
 check("purchase quantity", buy[6], "12")
 check("purchase cost", buy[7], "2400")
-AutoLootMailItem(4)
+AutoLootMailItem(4); update()
 local exp = events("expired")[1]
 check("expired recorded", exp and exp[5], "Linen Cloth")
 check("expired lost deposit", exp[8], "200")
 check("expired auction id", exp[11], "555003")
-TakeInboxMoney(5)
-TakeInboxMoney(6)
+TakeInboxMoney(5); update()
+TakeInboxMoney(6); update()
 check("ordinary mail ignored", #WowfahLedgerDB.events, 6)
+DeleteInboxItem(2); update()
+check("deleting an emptied mail records nothing", #events("sale"), 1)
 
--- next session: same sale mail still in the inbox, a fresh addon state
+-- next session: the emptied sale mail is still in the inbox, a fresh addon state
 local saved = WowfahLedgerDB
 local ns2 = {}
 for file in toc:gmatch("\n([%w_]+%.lua)") do assert(loadfile("WowfahLedger/" .. file))("WowfahLedger", ns2) end
 WowfahLedgerDB = saved
 ns2.frame.onOnEvent(ns2.frame, "ADDON_LOADED", "WowfahLedger")
 ns2.frame.onOnEvent(ns2.frame, "PLAYER_LOGIN")
-inbox = { { subject = "Auction successful: Mithril Bar", money = 21000, daysLeft = 29.5 - 3700 / 86400 + 3700 / 86400,
+local function update2() ns2.frame.onOnEvent(ns2.frame, "MAIL_INBOX_UPDATE") end
+inbox = { { subject = "Auction successful: Mithril Bar", money = 0,
             invoice = { type = "seller", name = "Mithril Bar", bid = 22000, deposit = 100, cut = 1100, count = 20 } } }
 ns2.frame.onOnEvent(ns2.frame, "MAIL_SHOW")
-TakeInboxMoney(1)
+TakeInboxMoney(1); update2()
+DeleteInboxItem(1); update2()
 check("same mail next session not recounted", #events("sale"), 1)
 
 -- a cancelled auction and a second identical-looking sale at a different time
 now = now + 600
+ns2.frame.onOnEvent(ns2.frame, "MAIL_CLOSED")
 inbox = {
   { subject = "Auction cancelled: Lionheart Helm", item = { id = 12640, name = "Lionheart Helm", count = 1 } },
   { subject = "Auction successful: Mithril Bar", money = 21000, invoice = { type = "seller", name = "Mithril Bar", bid = 22000, deposit = 100, cut = 1100, count = 20 } },
 }
-ns2.frame.onOnEvent(ns2.frame, "MAIL_INBOX_UPDATE")
-TakeInboxItem(1, 1)
-TakeInboxMoney(2)
+ns2.frame.onOnEvent(ns2.frame, "MAIL_SHOW")
+TakeInboxItem(1, 1); update2()
+TakeInboxMoney(2); update2()
 check("cancelled recorded", #events("cancelled"), 1)
 check("cancelled lost deposit", events("cancelled")[1][8], "150")
 check("later identical sale is a new sale", #events("sale"), 2)
 
+-- a posting that sells in two lots, then the rest comes back in several stacks
+ns2.frame.onOnEvent(ns2.frame, "MAIL_CLOSED")
+ns2._posting.onPostCommodity({ id = 10940, name = "Strange Dust" }, 2, 20, 169)
+ns2.frame.onOnEvent(ns2.frame, "AUCTION_HOUSE_AUCTION_CREATED", 777001)
+ns2._posting.onPostCommodity({ id = 10940, name = "Strange Dust" }, 2, 83, 137)
+ns2.frame.onOnEvent(ns2.frame, "AUCTION_HOUSE_AUCTION_CREATED", 777002)
+local posted = events("posted")
+check("posted row carries the auction id", posted[#posted][11], "777002")
+check("two events of one kind are still two rows", #posted, 5)
+local two = { id = 1470, name = "Murloc Skin Bag", count = 1 }
+inbox = {
+  { subject = "Auction successful: Strange Dust", money = 6400, invoice = { type = "seller", name = "Strange Dust", bid = 6713, deposit = 245, cut = 335, count = 49 } },
+  { subject = "Auction expired: Strange Dust", items = { { id = 10940, name = "Strange Dust", count = 20 }, { id = 10940, name = "Strange Dust", count = 14 } } },
+  { subject = "Auction won: Linen Cloth", invoice = { type = "buyer", name = "Linen Cloth", bid = 6715, deposit = 0, cut = 0, count = 60 },
+    items = { { id = 2589, name = "Linen Cloth", count = 20 }, { id = 2589, name = "Linen Cloth", count = 20 }, { id = 2589, name = "Linen Cloth", count = 20 } } },
+  { subject = "Auction won: Murloc Skin Bag", item = { id = 1470, name = "Murloc Skin Bag", count = 1 }, invoice = { type = "buyer", name = "Murloc Skin Bag", bid = 1998, deposit = 0, cut = 0, count = 1 } },
+  { subject = "Auction won: Murloc Skin Bag", item = { id = 1470, name = "Murloc Skin Bag", count = 1 }, invoice = { type = "buyer", name = "Murloc Skin Bag", bid = 1998, deposit = 0, cut = 0, count = 1 } },
+}
+ns2.frame.onOnEvent(ns2.frame, "MAIL_SHOW")
+local before = #events("purchase")
+TakeInboxMoney(1); update2()
+local lot = events("sale"); lot = lot[#lot]
+check("part sale matched to the posting at that price", lot[11], "777002")
+check("part sale quantity", lot[6], "49")
+TakeInboxItem(2, 1); update2()
+check("a mail with stacks left is not recorded yet", #events("expired"), 1)
+TakeInboxItem(2, 2); update2()
+local back = events("expired"); back = back[#back]
+check("expired quantity adds up the stacks", back[6], "34")
+check("expired auction id", back[11], "777002")
+check("deposit lost is the unsold share", back[8], tostring(math.floor(415 * 34 / 83 + 0.5)))
+TakeInboxItem(3, 1); TakeInboxItem(3, 2); TakeInboxItem(3, 3); update2()
+local big = events("purchase"); big = big[#big]
+check("large purchase uses the invoice quantity", big[6], "60")
+bagsFull = true
+TakeInboxItem(4, 1); update2()
+bagsFull = false
+now = now + 80
+TakeInboxItem(4, 1); table.remove(inbox, 4); update2()   -- the game removes an emptied purchase mail
+TakeInboxItem(4, 1); table.remove(inbox, 4); update2()
+check("two identical purchases, one failed take: two rows", #events("purchase") - before, 3)
+inbox[#inbox + 1] = { subject = "Retrieving data" }
+update2(); update2()
+check("a loading mail records nothing", #events("purchase") - before, 3)
+
 -- summary: 2 sales of 22000, cuts 2200, lost deposits 200 + 150, purchase 2400
 local s = ns2.Summarise(0)
-check("summary sales", s.sales, 44000)
-check("summary fees", s.fees, 2200)
-check("summary lost deposits", s.lost, 350)
-check("summary bought", s.bought, 2400)
-check("summary profit", s.profit, 44000 - 2200 - 350 - 2400)
+check("summary sales", s.sales, 44000 + 6713)
+check("summary fees", s.fees, 2200 + 335)
+check("summary lost deposits", s.lost, 350 + 170)
+check("summary bought", s.bought, 2400 + 6715 + 1998 * 2)
+check("summary profit", s.profit, s.sales - s.fees - s.lost - s.bought)
 check("money format", ns2.FormatMoney(1234567), "123g 45s 67c")
 check("money format negative", ns2.FormatMoney(-250), "-2s 50c")
 
@@ -205,7 +274,7 @@ ns2.frame.onOnEvent(ns2.frame, "AUCTION_HOUSE_BROWSE_RESULTS_UPDATED")
 check("price sightings (zero price skipped, repeats skipped)", #WowfahLedgerDB.sightings, 1)
 ns2.frame.onOnEvent(ns2.frame, "OWNED_AUCTIONS_UPDATED")
 ns2.frame.onOnEvent(ns2.frame, "OWNED_AUCTIONS_UPDATED")
-check("owned auction ids (3 posted + 2 listed, no repeats)", #WowfahLedgerDB.owned, 5)
+check("owned auction ids (5 posted + 2 listed, no repeats)", #WowfahLedgerDB.owned, 7)
 
 -- chat line, slash commands, export
 ns2.frame.onOnEvent(ns2.frame, "CHAT_MSG_SYSTEM", "A buyer has been found for your auction of Mithril Bar.")

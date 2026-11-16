@@ -12,6 +12,7 @@ local function remember(itemID, name, qty, total, deposit)
   table.insert(ns.db.postings, row)
   pending = { index = #ns.db.postings, name = name, itemID = itemID or 0, qty = qty or 1, total = total or 0, deposit = deposit or 0 }
   ns.AddEvent("posted", itemID, name, qty, total, deposit, 0, 0, 0)
+  pending.event = #ns.db.events
 end
 
 local function itemInfo(location)
@@ -51,6 +52,13 @@ ns.On("AUCTION_HOUSE_AUCTION_CREATED", function(auctionID)
   local list = ns.db.postings
   if list[pending.index] then
     list[pending.index] = ns.Row(pending.name, pending.itemID, pending.qty, pending.deposit, auctionID, time(), pending.total)
+  end
+  -- and to the "posted" row, so the website can tell which of your auctions are still up
+  local ev = ns.db.events[pending.event]
+  if ev and ev:match("^posted|") then
+    local f = {}
+    for part in (ev .. "|"):gmatch("([^|]*)|") do f[#f + 1] = part end
+    if f[11] == "0" then f[11] = tostring(auctionID); ns.db.events[pending.event] = table.concat(f, ns.SEP) end
   end
   table.insert(ns.db.owned, ns.Row(auctionID, pending.itemID, time(), ns.charKey or "", ns.MapID()))
   pending = nil
