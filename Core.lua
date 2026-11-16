@@ -3,7 +3,7 @@
 -- Other players' names are never stored.
 
 local ADDON, ns = ...
-ns.VERSION = "0.5.0"
+ns.VERSION = "0.6.0"
 ns.SEP = "|"
 
 local MAX_SIGHTINGS, MAX_OWNED, MAX_POSTINGS, MAX_SEEN, MAX_EVENTS = 4000, 400, 300, 400, 20000
@@ -119,6 +119,7 @@ function ns.AddEvent(kind, itemID, itemName, qty, gross, deposit, cut, net, auct
   local row = ns.Row(kind, when or time(), ns.charKey or ns.CharKey(), itemID or 0, itemName or "", qty or 1,
     gross or 0, deposit or 0, cut or 0, net or 0, auctionID or 0, ns.MapID())
   table.insert(ns.db.events, row)
+  if ns.InvalidateData then ns.InvalidateData() end
   if ns.RefreshUI then ns.RefreshUI() end
   return row
 end

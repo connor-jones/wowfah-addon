@@ -411,6 +411,53 @@ fire("LOOT_OPENED"); fire("LOOT_CLOSED")
 check("loot off stops recording", row(db.lootSrc, key)[8], "3")
 SlashCmdList["WOWFAH"]("loot on")
 
+-- ---- the data layer every view reads from ----
+local base = #ns.Events()
+check("events parsed once and reused", ns.Events() == ns.Events(), true)
+local t0 = now + 5000
+local saveNow = now
+now = t0
+ns.AddEvent("sale", 3860, "Mithril Bar", 10, 10000, 50, 500, 9500, 777001)
+ns.AddEvent("purchase", 2589, "Linen Cloth", 40, 800, 0, 0, 800, 0)
+ns.AddEvent("expired", 2589, "Linen Cloth", 20, 0, 30, 0, 0, 777002)
+ns.AddEvent("posted", 2589, "Linen Cloth", 20, 600, 30, 0, 0, 777003)
+check("cache refreshed by a new event", #ns.Events(), base + 4)
+local s = ns.Summarise(t0 - 1, false)
+check("period sales", s.sales, 10000)
+check("period profit is sales minus cut, lost deposits and purchases", s.profit, 10000 - 500 - 30 - 800)
+check("period counts", s.nSales .. "/" .. s.nBought .. "/" .. s.failed .. "/" .. s.posted, "1/1/1/1")
+local items = ns.ByItem(t0 - 1, false)
+check("items sorted by profit", items[1].name .. ">" .. items[2].name, "Mithril Bar>Linen Cloth")
+check("item profit", items[1].profit, 9500)
+check("item loss counts purchases and lost deposits", items[2].profit, -830)
+check("item quantities", items[1].sold .. "/" .. items[2].boughtQty, "10/40")
+local days = ns.ByDay(30, false)
+check("thirty days", #days, 30)
+check("today is last and holds today's profit", days[30].profit, ns.Summarise(days[30].day, false).profit)
+check("days are a day apart", days[30].day - days[29].day, 86400)
+local chars = ns.ByCharacter(0)
+check("by character", chars[1].char, "Thrall-ForeverPvE1")
+check("recent leaves out posted rows", ns.Recent(1, false)[1].kind, "expired")
+check("recent by kind", ns.Recent(1, false, "sale")[1].name, "Mithril Bar")
+check("recent search", #ns.Recent(nil, false, nil, "mithril") >= 1 and ns.Recent(1, false, nil, "MITHRIL")[1].name, "Mithril Bar")
+check("recent search with no match", #ns.Recent(nil, false, nil, "zzzz"), 0)
+ns.onlyThisCharacter = true
+check("this character only still counts this character", ns.Summarise(t0 - 1).sales, 10000)
+ns.charKey = "Someone-Else"
+check("and leaves other characters out", ns.Summarise(t0 - 1).sales, 0)
+ns.charKey, ns.onlyThisCharacter = "Thrall-ForeverPvE1", nil
+check("coins fall back to plain text without the game's coin icons", ns.Coins(12345), "1g 23s 45c")
+check("negative coins", ns.Coins(-250), "-2s 50c")
+now = saveNow
+-- the bundled libraries at least parse
+for _, f in ipairs({ "Libs/LibStub/LibStub.lua", "Libs/CallbackHandler-1.0/CallbackHandler-1.0.lua",
+  "Libs/LibDataBroker-1.1/LibDataBroker-1.1.lua", "Libs/LibDBIcon-1.0/LibDBIcon-1.0.lua" }) do
+  check(f .. " parses", loadfile(f) ~= nil, true)
+end
+for line in toc:gmatch("[^\r\n]+") do
+  if line:match("%.lua$") then check(line .. " exists", io.open((line:gsub("\\", "/"))) ~= nil, true) end
+end
+
 -- ---- opening the ledger without commands ----
 check("minimap button setting exists", type(db.minimap), "table")
 check("welcome shown once", db.welcomed, true)

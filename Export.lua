@@ -33,23 +33,18 @@ local exportFrame
 function ns.ShowExport()
   local code = ns.BuildExport()
   if not exportFrame then
-    local f = CreateFrame("Frame", "WowfahLedgerExport", UIParent, BackdropTemplateMixin and "BackdropTemplate" or nil)
+    local f = CreateFrame("Frame", "WowfahLedgerExport", UIParent)
     f:SetSize(520, 320)
     f:SetPoint("CENTER")
     f:SetFrameStrata("DIALOG")
-    if f.SetBackdrop then
-      f:SetBackdrop({ bgFile = "Interface\\ChatFrame\\ChatFrameBackground", edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-        edgeSize = 14, insets = { left = 3, right = 3, top = 3, bottom = 3 } })
-      f:SetBackdropColor(0.04, 0.06, 0.05, 0.96)
-      f:SetBackdropBorderColor(0.83, 0.64, 0.30, 1)
-    end
+    ns.Flat(f, ns.C.bg, ns.C.brass)
     f:EnableMouse(true)
     f:SetMovable(true)
     f:RegisterForDrag("LeftButton")
     f:SetScript("OnDragStart", f.StartMoving)
     f:SetScript("OnDragStop", f.StopMovingOrSizing)
 
-    local title = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    local title = ns.Text(f, "title")
     title:SetPoint("TOPLEFT", 14, -12)
     title:SetText("Upload to wowfah.com")
     local hint = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
@@ -68,11 +63,8 @@ function ns.ShowExport()
     scroll:SetScrollChild(box)
     f.box = box
 
-    local close = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
-    close:SetSize(90, 22)
+    local close = ns.Button(f, CLOSE or "Close", 90, function() f:Hide() end)
     close:SetPoint("BOTTOMRIGHT", -12, 12)
-    close:SetText(CLOSE or "Close")
-    close:SetScript("OnClick", function() f:Hide() end)
     f.note = f:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
     f.note:SetPoint("BOTTOMLEFT", 14, 16)
     exportFrame = f

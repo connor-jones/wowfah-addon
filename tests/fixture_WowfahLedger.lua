@@ -1,6 +1,6 @@
 
 WowfahLedgerDB = {
-	["addon"] = "0.5.0",
+	["addon"] = "0.6.0",
 	["chars"] = {
 		["Thrall-ForeverPvE1"] = "3|Horde|1|0|0|18|1794754580",
 	},
@@ -46,6 +46,10 @@ WowfahLedgerDB = {
 		"purchase|1794754380|Thrall-ForeverPvE1|2589|Linen Cloth|60|6715|0|0|-6715|0|1454", -- [13]
 		"purchase|1794754460|Thrall-ForeverPvE1|1470|Murloc Skin Bag|1|1998|0|0|-1998|0|1454", -- [14]
 		"purchase|1794754460|Thrall-ForeverPvE1|1470|Murloc Skin Bag|1|1998|0|0|-1998|0|1454", -- [15]
+		"sale|1794759580|Thrall-ForeverPvE1|3860|Mithril Bar|10|10000|50|500|9500|777001|1454", -- [16]
+		"purchase|1794759580|Thrall-ForeverPvE1|2589|Linen Cloth|40|800|0|0|800|0|1454", -- [17]
+		"expired|1794759580|Thrall-ForeverPvE1|2589|Linen Cloth|20|0|30|0|0|777002|1454", -- [18]
+		"posted|1794759580|Thrall-ForeverPvE1|2589|Linen Cloth|20|600|30|0|0|777003|1454", -- [19]
 	},
 	["install"] = "4a208000b000",
 	["lootItems"] = {
@@ -67,8 +71,8 @@ WowfahLedgerDB = {
 		["o:1731:1454:2575"] = "Copper Vein|The Barrens|The Crossroads||0|||1",
 	},
 	["minimap"] = {
-		["angle"] = 215,
 		["hide"] = false,
+		["minimapPos"] = 215,
 	},
 	["owned"] = {
 		"555001|12640|1794750000|Thrall-ForeverPvE1|1454", -- [1]

@@ -31,7 +31,8 @@ then restart the game or type `/reload`.
 
 ## Use
 
-- `/wowfah` opens the ledger window.
+- Click the wowfah button on the minimap to open the ledger. There is also a button on the auction house and the
+  mailbox. `/wowfah` does the same.
 - `/wowfah export` shows a code to paste at wowfah.com/ledger/upload.
 - `/wowfah path` tells you which saved file to upload.
 - `/wowfah share on` or `/wowfah share off` controls whether your uploads add anonymous sale prices to the site.
@@ -46,8 +47,11 @@ An addon cannot use the internet, so nothing is sent automatically. Either uploa
 
 ## Development
 
-`luajit tests/run.lua` runs the logic against a fake mailbox and auction house. `tools/package.sh` builds
-the zip with the installers from `installer/`. The Windows batch file has not been run on a real
-Windows machine by its author: test it there before relying on it. The code is plain Lua with no libraries.
+The addon's files are at the top of this repository, which is the layout the addon sites expect.
+
+- `luajit tests/run.lua` runs the logic against a fake mailbox, auction house and loot window.
+- `tools/package.sh` builds two zips: the addon alone, and the addon with the installers from `installer/`.
+- Pushing a tag such as `v0.6.0` publishes a release (see `.github/workflows/release.yml`).
+- `Libs/` holds four small standard libraries, unchanged; see `Libs/README.md`.
 
 Licence: MIT. Not affiliated with Blizzard Entertainment.

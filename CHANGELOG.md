@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.6.0
+
+- A cleaner look: flat dark panels with thin borders in the ledger, upload and settings windows, and coin icons on
+  the headline profit figures.
+- The minimap button now uses the standard minimap button library, so it sits correctly on reskinned or square
+  minimaps and works with button collectors. Its position and your hide setting are kept.
+- Bar addons such as Titan Panel and ElvUI can show wowfah Ledger: the text is today's profit.
+- wowfah Ledger has a page in the game's own Options window with the same three settings.
+- The game's addon list by the minimap shows today's profit when you hover over wowfah Ledger.
+- Faster: the saved records are read once and reused instead of on every refresh.
+
 ## 0.5.0
 
 - No commands needed any more. A wowfah button on the minimap opens your ledger (drag it to move it, right-click for an
