@@ -3,7 +3,7 @@
 -- Other players' names are never stored.
 
 local ADDON, ns = ...
-ns.VERSION = "0.4.0"
+ns.VERSION = "0.5.0"
 ns.SEP = "|"
 
 local MAX_SIGHTINGS, MAX_OWNED, MAX_POSTINGS, MAX_SEEN, MAX_EVENTS = 4000, 400, 300, 400, 20000
@@ -239,8 +239,13 @@ SlashCmdList["WOWFAH"] = function(msg)
     ns.Print("Sharing anonymous sale prices with wowfah.com is now " .. (ns.db.share and "on" or "off") .. ".")
   elseif msg == "loot on" or msg == "loot off" then
     if ns.SetLoot then ns.SetLoot(msg == "loot on") end
+  elseif msg == "minimap" then
+    if ns.ShowMinimapButton then
+      ns.ShowMinimapButton(ns.db.minimap and ns.db.minimap.hide and true or false)
+      ns.Print("The minimap button is now " .. (ns.db.minimap.hide and "hidden. Type /wowfah minimap to bring it back." or "shown."))
+    end
   elseif msg == "help" then
-    ns.Print("/wowfah (open the ledger), /wowfah export, /wowfah path, /wowfah share on|off, /wowfah loot on|off, /wowfah debug")
+    ns.Print("/wowfah (open the ledger), /wowfah export, /wowfah path, /wowfah share on|off, /wowfah loot on|off, /wowfah minimap, /wowfah debug")
   else
     if ns.ToggleUI then ns.ToggleUI() end
   end

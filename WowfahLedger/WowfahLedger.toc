@@ -2,10 +2,12 @@
 ## Title: wowfah Ledger
 ## Notes: Tracks your auction house sales, purchases and fees so you can see your profit on wowfah.com.
 ## Author: wowfah.com
-## Version: 0.4.0
+## Version: 0.5.0
 ## X-Website: https://wowfah.com/addon
 ## X-License: MIT
 ## SavedVariables: WowfahLedgerDB
+## IconTexture: Interface\AddOns\WowfahLedger\icon
+## AddonCompartmentFunc: WowfahLedger_OnAddonCompartmentClick
 
 Core.lua
 Mail.lua
@@ -14,3 +16,4 @@ Prices.lua
 Loot.lua
 Export.lua
 UI.lua
+Launch.lua

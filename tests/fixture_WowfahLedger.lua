@@ -1,8 +1,8 @@
 
 WowfahLedgerDB = {
-	["addon"] = "0.4.0",
+	["addon"] = "0.5.0",
 	["chars"] = {
-		["Thrall-ForeverPvE1"] = "3|Horde|1|0|0|18|1794754460",
+		["Thrall-ForeverPvE1"] = "3|Horde|1|0|0|18|1794754580",
 	},
 	["debug"] = {
 		["GetNormalizedRealmName"] = "ForeverPvE1",
@@ -13,7 +13,7 @@ WowfahLedgerDB = {
 		["build"] = "1.60.1 70938 toc 16001",
 		["events"] = "15",
 		["faction"] = "Horde",
-		["lastAH"] = "1794754460|1454|The Barrens|The Crossroads|Thrall|",
+		["lastAH"] = "1794754580|1454|The Barrens|The Crossroads|Wrahk|Creature-0-4444-1-12-3489-0000000005",
 		["lastError"] = "",
 		["lastInvoice"] = "buyer Murloc Skin Bag 1998 0 0 0 1",
 		["loot"] = "nil install=4a208000b000",
@@ -66,6 +66,10 @@ WowfahLedgerDB = {
 		["i:5523:1454:0"] = "|The Barrens|The Crossroads||0|||1",
 		["o:1731:1454:2575"] = "Copper Vein|The Barrens|The Crossroads||0|||1",
 	},
+	["minimap"] = {
+		["angle"] = 215,
+		["hide"] = false,
+	},
 	["owned"] = {
 		"555001|12640|1794750000|Thrall-ForeverPvE1|1454", -- [1]
 		"555002|3860|1794750000|Thrall-ForeverPvE1|1454", -- [2]
@@ -95,4 +99,5 @@ WowfahLedgerDB = {
 	["vendors"] = {
 		["3489:1454"] = "Wrahk|The Barrens|The Crossroads|1794754580",
 	},
+	["welcomed"] = true,
 }

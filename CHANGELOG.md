@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.5.0
+
+- No commands needed any more. A wowfah button on the minimap opens your ledger (drag it to move it, right-click for an
+  upload code), and there is a wowfah Ledger button on the auction house and on the mailbox.
+- The ledger window is redrawn: profit for today, 7 days, 30 days and all time as four cards, a tidy list of recent
+  activity, an Upload button and a Settings panel with the sharing options.
+- A "This character only" tick box in the window.
+- `/wowfah minimap` hides or shows the minimap button.
+
 ## 0.4.0
 
 - New, and off until you say yes: the addon can note what drops where. It asks once at login. If you agree it counts

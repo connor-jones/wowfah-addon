@@ -51,10 +51,10 @@ function ns.ShowExport()
 
     local title = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     title:SetPoint("TOPLEFT", 14, -12)
-    title:SetText("wowfah Ledger export")
+    title:SetText("Upload to wowfah.com")
     local hint = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     hint:SetPoint("TOPLEFT", 14, -34)
-    hint:SetText("Press Ctrl+C (Cmd+C on a Mac) to copy, then paste at wowfah.com/ledger/upload")
+    hint:SetText("1. Press Ctrl+C (Cmd+C on a Mac)    2. Open wowfah.com/ledger/upload    3. Paste and press Upload")
 
     local scroll = CreateFrame("ScrollFrame", "WowfahLedgerExportScroll", f, "UIPanelScrollFrameTemplate")
     scroll:SetPoint("TOPLEFT", 14, -54)
@@ -78,7 +78,7 @@ function ns.ShowExport()
     exportFrame = f
   end
   exportFrame.box:SetText(code)
-  exportFrame.note:SetText(string.format("%d characters. If copying is slow, upload the saved file instead: /wowfah path", #code))
+  exportFrame.note:SetText(string.format("The code is already selected (%d characters). The website can also read the saved file by itself.", #code))
   exportFrame:Show()
   exportFrame.box:SetFocus()
   exportFrame.box:HighlightText()

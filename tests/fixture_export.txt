@@ -1,4 +1,4 @@
-WFL0:V|1|0.4.0|0|1794754460||4a208000b000
+WFL0:V|1|0.5.0|0|1794754460||4a208000b000
 C|Thrall-ForeverPvE1|3|Horde|1|0|0|18|1794754460
 E|posted|1794750000|Thrall-ForeverPvE1|12640|Lionheart Helm|1|4500000|150|0|0|555001|1454
 E|posted|1794750000|Thrall-ForeverPvE1|3860|Mithril Bar|20|22000|100|0|0|555002|1454
@@ -23,27 +23,27 @@ O|777002|10940|1794754380|Thrall-ForeverPvE1|1454
 O|9001|3860|1794754460|Thrall-ForeverPvE1|1454
 O|9002|3860|1794754460|Thrall-ForeverPvE1|1454
 S|1794754460|Thrall-ForeverPvE1|1454|3860|1085|4652
+D|time|1794754460
+D|build|1.60.1 70938 toc 16001
 D|project|18
-D|soldMessages|1
-D|npc|Thrall / none
+D|events|15
 D|region|3
-D|lastInvoice|buyer Murloc Skin Bag 1998 0 0 0 1
+D|faction|Horde
 D|rules|pvp=1 rp=0 hc=0
+D|UnitFullName|Thrall / ForeverPvE1
+D|GetNormalizedRealmName|ForeverPvE1
+D|lastInvoice|buyer Murloc Skin Bag 1998 0 0 0 1
 D|map|1454
 D|zone|The Barrens / The Crossroads
-D|events|15
-D|faction|Horde
-D|lootApis|GetLootSourceInfo=yes GetLootSlotLink=yes GetLootSlotInfo=yes GetLootSlotType=yes IsFishingLoot=yes GetMerchantItemID=yes GetMerchantItemInfo=yes GetQuestItemLink=yes GetInstanceInfo=yes UnitClassification=yes C_MerchantFrame=no
-D|build|1.60.1 70938 toc 16001
 D|GetRealmName|Forever PvE 1
-D|lastAH|1794754460 1454 The Barrens The Crossroads Thrall 
-D|loot|nil install=4a208000b000
+D|owned|7
+D|npc|Thrall / none
 D|lastError|
+D|UnitName|Thrall / nil
+D|soldMessages|1
+D|sightings|1
+D|loot|nil install=4a208000b000
+D|lootApis|GetLootSourceInfo=yes GetLootSlotLink=yes GetLootSlotInfo=yes GetLootSlotType=yes IsFishingLoot=yes GetMerchantItemID=yes GetMerchantItemInfo=yes GetQuestItemLink=yes GetInstanceInfo=yes UnitClassification=yes C_MerchantFrame=no
+D|lastAH|1794754460 1454 The Barrens The Crossroads Thrall 
 D|apis|C_AuctionHouse=yes PostItem=yes PostCommodity=yes GetOwnedAuctionInfo=yes GetBrowseResults=yes GetInboxInvoiceInfo=yes C_EncodingUtil=no C_GameRules=yes legacyPostAuction=no
 D|subjects|expired=Auction expired: %s removed=Auction cancelled: %s sold=nil won=nil
-D|sightings|1
-D|UnitFullName|Thrall / ForeverPvE1
-D|time|1794754460
-D|owned|7
-D|UnitName|Thrall / nil
-D|GetNormalizedRealmName|ForeverPvE1

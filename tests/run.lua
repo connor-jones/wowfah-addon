@@ -399,7 +399,7 @@ fire("QUEST_COMPLETE")
 check("quest rewards", db.quests["870"], "The Forgotten Pools|10|The Barrens|4306:2|2589:1,2770:1")
 -- export carries the loot only while sharing is on
 local lines = table.concat(ns.BuildLines(), "\n")
-check("export header has loot flag and install", lines:match("^V|1|0%.4%.0|%d|%d+|1|(%x+)"), db.install)
+check("export header has loot flag and install", lines:match("^V|1|[%d%.]+|%d|%d+|1|(%x+)"), db.install)
 check("export loot line", lines:find("L|c|3273|1454|0|Kolkar Stormer|The Barrens|The Crossroads||12|normal||3", 1, true) ~= nil, true)
 check("export item line", lines:find("I|c|3273|1454|0|2589|2|3|0", 1, true) ~= nil, true)
 check("export vendor item line", lines:find("N|3489|2320|10|1|-1|0", 1, true) ~= nil, true)
@@ -410,6 +410,19 @@ lootWindow = { { id = 2589, name = "Linen Cloth", qty = 1, src = { creature(3273
 fire("LOOT_OPENED"); fire("LOOT_CLOSED")
 check("loot off stops recording", row(db.lootSrc, key)[8], "3")
 SlashCmdList["WOWFAH"]("loot on")
+
+-- ---- opening the ledger without commands ----
+check("minimap button setting exists", type(db.minimap), "table")
+check("welcome shown once", db.welcomed, true)
+check("addon list entry opens the ledger", type(WowfahLedger_OnAddonCompartmentClick), "function")
+WowfahLedger_OnAddonCompartmentClick("WowfahLedger", "LeftButton")
+WowfahLedger_OnAddonCompartmentClick("WowfahLedger", "RightButton")
+SlashCmdList["WOWFAH"]("minimap")
+check("minimap button can be hidden", db.minimap.hide, true)
+SlashCmdList["WOWFAH"]("minimap")
+check("and shown again", db.minimap.hide, false)
+check("today line", ns.TodayLine():match("^Today: profit ") ~= nil, true)
+fire("AUCTION_HOUSE_SHOW"); fire("MAIL_SHOW")
 
 -- write the saved file the way the game would, for the website's parser tests
 local function dump(v, indent)
