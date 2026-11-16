@@ -88,6 +88,38 @@ C_AuctionHouse = {
   QueryOwnedAuctions = function() end,
 }
 
+-- ---- loot windows, merchants and quest rewards ----
+local lootWindow, fishingLoot, targetGUID, units = {}, false, nil, {}
+GetNumLootItems = function() return #lootWindow end
+GetLootSlotType = function(i) return lootWindow[i].money and 2 or 1 end
+GetLootSlotLink = function(i) local s = lootWindow[i]; if s.id then return "|Hitem:" .. s.id .. "::::|h[x]|h" end end
+GetLootSlotInfo = function(i) local s = lootWindow[i]; return nil, s.name, s.qty or 1, nil, 1, false, s.quest or false end
+GetLootSourceInfo = function(i) return unpack(lootWindow[i].src or {}) end
+IsFishingLoot = function() return fishingLoot end
+UnitGUID = function(u) if u == "target" then return targetGUID end; return units[u] and units[u].guid end
+UnitLevel = function(u) return units[u] and units[u].level or 10 end
+UnitClassification = function(u) return units[u] and units[u].class or "normal" end
+GetRealZoneText = function() return "The Barrens" end
+GetSubZoneText = function() return "The Crossroads" end
+GetInstanceInfo = function() return "Kalimdor", "none" end
+GetTime = function() return 1234.567 end
+local merchant = {}
+GetMerchantNumItems = function() return #merchant end
+GetMerchantItemID = function(i) return merchant[i].id end
+GetMerchantItemInfo = function(i) local m = merchant[i]; return m.name, nil, m.price, m.stack or 1, m.avail or -1, true, true, false end
+local quest = { id = 0, rewards = {}, choices = {} }
+GetQuestID = function() return quest.id end
+GetTitleText = function() return quest.title end
+GetNumQuestRewards = function() return #quest.rewards end
+GetNumQuestChoices = function() return #quest.choices end
+GetQuestItemLink = function(kind, i) local l = kind == "reward" and quest.rewards or quest.choices; return "|Hitem:" .. l[i].id .. "::::|h[x]|h" end
+GetQuestItemInfo = function(kind, i) local l = kind == "reward" and quest.rewards or quest.choices; return "x", nil, l[i].qty or 1 end
+local popup
+StaticPopupDialogs = {}
+StaticPopup_Show = function(name) popup = StaticPopupDialogs[name] end
+local bagItems = {}
+C_Container = { UseContainerItem = function() end, GetContainerItemID = function(bag, slot) return bagItems[bag .. ":" .. slot] end }
+
 -- ---- load the addon the way the game does ----
 local ns = {}
 local toc = io.open("WowfahLedger/WowfahLedger.toc"):read("*a")
@@ -290,6 +322,94 @@ check("plain export prefix when no compressor", code:sub(1, 5), "WFL0:")
 check("export has events", select(2, code:gsub("\nE|", "")), #WowfahLedgerDB.events)
 check("export header carries share flag", code:match("^WFL0:V|1|[%d%.]+|(%d)|"), "0")
 ns2.frame.onOnEvent(ns2.frame, "PLAYER_LOGOUT")
+
+-- ---- loot: nothing is recorded until the player says yes ----
+local db = WowfahLedgerDB
+local function creature(id, n) return ("Creature-0-4444-1-12-%d-%010X"):format(id, n) end
+local function row(t, key) local f = {}; for part in ((t[key] or "") .. "|"):gmatch("([^|]*)|") do f[#f + 1] = part end; return f end
+check("loot question asked once at login", popup ~= nil, true)
+check("loot undecided at first", db.lootShare, nil)
+check("install label made", #db.install, 12)
+units.target = { guid = creature(3273, 1), level = 12, class = "normal" }; targetGUID = units.target.guid
+UnitName = function(u) if u == "target" then return "Kolkar Stormer" end; if u == "npc" then return "Wrahk" end; return "Thrall" end
+fire("PLAYER_TARGET_CHANGED")
+lootWindow = { { id = 2589, name = "Linen Cloth", qty = 2, src = { creature(3273, 1), 2 } } }
+fire("LOOT_READY"); fire("LOOT_OPENED"); fire("LOOT_CLOSED")
+check("nothing recorded before consent", next(db.lootSrc), nil)
+popup.OnAccept()
+check("consent stored", db.lootShare, true)
+
+fire("LOOT_READY"); fire("LOOT_OPENED"); fire("LOOT_CLOSED")
+local key = "c:3273:1454:0"
+check("creature source row", db.lootSrc[key], "Kolkar Stormer|The Barrens|The Crossroads||12|normal||1")
+check("drop counted once for ready and opened", db.lootItems[key .. ":2589"], "1|2|0")
+fire("LOOT_READY"); fire("LOOT_CLOSED")
+check("same corpse opened again is not counted twice", row(db.lootSrc, key)[8], "1")
+-- area loot: two corpses in one window, one of them a creature never targeted, plus coin
+lootWindow = {
+  { money = true, src = { creature(3273, 2), 1, creature(3274, 3), 1 } },
+  { id = 2589, name = "Linen Cloth", qty = 3, src = { creature(3273, 2), 1, creature(3274, 3), 2 } },
+  { id = 4306, name = "Silk Cloth", qty = 1, quest = true, src = { creature(3274, 3), 1 } },
+}
+fire("LOOT_OPENED"); fire("LOOT_CLOSED")
+check("second kill of the same creature", row(db.lootSrc, key)[8], "2")
+check("drops and quantity add up", db.lootItems[key .. ":2589"], "2|3|0")
+check("unseen creature still recorded by id", row(db.lootSrc, "c:3274:1454:0")[8], "1")
+check("quest item flagged", db.lootItems["c:3274:1454:0:4306"], "1|1|1")
+-- a corpse with only coin still counts as looted
+lootWindow = { { money = true, src = { creature(3273, 9), 1 } } }
+fire("LOOT_OPENED"); fire("LOOT_CLOSED")
+check("coin only corpse counts towards the total", row(db.lootSrc, key)[8], "3")
+-- mining a node: the cast names the node and the spell
+fire("UNIT_SPELLCAST_SENT", "player", "Copper Vein", "cast-1", 2575)
+lootWindow = { { id = 2770, name = "Copper Ore", qty = 3, src = { "GameObject-0-4444-1-12-1731-0000000001", 3 } } }
+fire("LOOT_OPENED"); fire("LOOT_CLOSED")
+check("node source", db.lootSrc["o:1731:1454:2575"]:match("^Copper Vein|The Barrens|"), "Copper Vein|The Barrens|")
+check("node drop", db.lootItems["o:1731:1454:2575:2770"], "1|3|0")
+-- skinning: the same creature id with a spell is a different source from killing it
+now = now + 60
+fire("UNIT_SPELLCAST_SENT", "player", "Kolkar Stormer", "cast-2", 8613)
+lootWindow = { { id = 2318, name = "Light Leather", qty = 1, src = { creature(3273, 77), 1 } } }
+fire("LOOT_OPENED"); fire("LOOT_CLOSED")
+check("skinning kept apart from kill loot", db.lootItems["c:3273:1454:8613:2318"], "1|1|0")
+-- fishing: no source id, keyed by map; two catches are two casts
+now = now + 60
+fishingLoot = true
+lootWindow = { { id = 6291, name = "Raw Brilliant Smallfish", qty = 1, src = {} } }
+fire("LOOT_OPENED"); fire("LOOT_CLOSED"); fire("LOOT_OPENED"); fire("LOOT_CLOSED")
+check("fishing counted per catch", db.lootItems["f:0:1454:0:6291"], "2|2|0")
+check("fishing casts", row(db.lootSrc, "f:0:1454:0")[8], "2")
+fishingLoot = false
+-- opening a container from the bags
+bagItems["0:3"] = 5523
+C_Container.UseContainerItem(0, 3)
+lootWindow = { { id = 5498, name = "Small Lustrous Pearl", qty = 1, src = { "Item-4444-0-4000000A1B2C3D4E", 1 } } }
+fire("LOOT_OPENED"); fire("LOOT_CLOSED")
+check("container loot credited to the item opened", db.lootItems["i:5523:1454:0:5498"], "1|1|0")
+-- a vendor
+units.npc = { guid = creature(3489, 5) }
+merchant = { { id = 2320, name = "Coarse Thread", price = 10 }, { id = 6270, name = "Pattern: Blue Linen Vest", price = 200, avail = 1 } }
+fire("MERCHANT_SHOW")
+check("vendor row", db.vendors["3489:1454"]:match("^Wrahk|The Barrens|The Crossroads|"), "Wrahk|The Barrens|The Crossroads|")
+check("vendor price", db.vendorItems["3489:2320"], "10|1|-1|0")
+check("vendor limited stock", db.vendorItems["3489:6270"], "200|1|1|0")
+-- a quest reward window
+quest = { id = 870, title = "The Forgotten Pools", rewards = { { id = 4306, qty = 2 } }, choices = { { id = 2589 }, { id = 2770 } } }
+fire("QUEST_COMPLETE")
+check("quest rewards", db.quests["870"], "The Forgotten Pools|10|The Barrens|4306:2|2589:1,2770:1")
+-- export carries the loot only while sharing is on
+local lines = table.concat(ns.BuildLines(), "\n")
+check("export header has loot flag and install", lines:match("^V|1|0%.4%.0|%d|%d+|1|(%x+)"), db.install)
+check("export loot line", lines:find("L|c|3273|1454|0|Kolkar Stormer|The Barrens|The Crossroads||12|normal||3", 1, true) ~= nil, true)
+check("export item line", lines:find("I|c|3273|1454|0|2589|2|3|0", 1, true) ~= nil, true)
+check("export vendor item line", lines:find("N|3489|2320|10|1|-1|0", 1, true) ~= nil, true)
+check("export quest line", lines:find("Q|870|The Forgotten Pools|", 1, true) ~= nil, true)
+SlashCmdList["WOWFAH"]("loot off")
+check("loot off stops the export", table.concat(ns.BuildLines(), "\n"):find("\nL|", 1, true), nil)
+lootWindow = { { id = 2589, name = "Linen Cloth", qty = 1, src = { creature(3273, 500), 1 } } }
+fire("LOOT_OPENED"); fire("LOOT_CLOSED")
+check("loot off stops recording", row(db.lootSrc, key)[8], "3")
+SlashCmdList["WOWFAH"]("loot on")
 
 -- write the saved file the way the game would, for the website's parser tests
 local function dump(v, indent)

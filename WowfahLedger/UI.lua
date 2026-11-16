@@ -3,7 +3,7 @@
 local _, ns = ...
 
 local window
-local LINES = 12
+local LINES = 11
 
 -- profit = sales - auction house cut - deposits lost on unsold auctions - purchases
 function ns.Summarise(sinceTime)
@@ -63,6 +63,7 @@ function ns.RefreshUI()
   for i = 1, LINES do window.recent[i]:SetText(lines[i] or "") end
   if #lines == 0 then window.recent[1]:SetText("Nothing recorded yet. Collect auction house mail and it will appear here.") end
   window.share:SetChecked(ns.db.share and true or false)
+  if window.loot then window.loot:SetChecked(ns.db.lootShare == true) end
 end
 
 local function build()
@@ -117,6 +118,15 @@ local function build()
   shareText:SetPoint("LEFT", share, "RIGHT", 2, 0)
   shareText:SetText("Share anonymous sale prices with wowfah.com when I upload")
   f.share = share
+
+  local loot = CreateFrame("CheckButton", nil, f, "UICheckButtonTemplate")
+  loot:SetSize(24, 24)
+  loot:SetPoint("BOTTOMLEFT", 12, 32)
+  loot:SetScript("OnClick", function(self) if ns.SetLoot then ns.SetLoot(self:GetChecked() and true or false, true) end end)
+  local lootText = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+  lootText:SetPoint("LEFT", loot, "RIGHT", 2, 0)
+  lootText:SetText("Share what drops where (creatures, nodes, vendors, quests). No character names")
+  f.loot = loot
 
   local close = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
   close:SetSize(80, 22)

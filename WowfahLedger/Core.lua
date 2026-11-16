@@ -3,10 +3,10 @@
 -- Other players' names are never stored.
 
 local ADDON, ns = ...
-ns.VERSION = "0.3.0"
+ns.VERSION = "0.4.0"
 ns.SEP = "|"
 
-local MAX_SIGHTINGS, MAX_OWNED, MAX_POSTINGS, MAX_SEEN = 4000, 400, 300, 400
+local MAX_SIGHTINGS, MAX_OWNED, MAX_POSTINGS, MAX_SEEN, MAX_EVENTS = 4000, 400, 300, 400, 20000
 
 -- ---------------------------------------------------------------------------------------------
 -- small helpers
@@ -162,6 +162,7 @@ ns.handlers["PLAYER_LOGOUT"] = { function()
   ns.Trim(ns.db.owned, MAX_OWNED)
   ns.Trim(ns.db.postings, MAX_POSTINGS)
   ns.Trim(ns.db.seen, MAX_SEEN)
+  ns.Trim(ns.db.events, MAX_EVENTS)     -- the website keeps everything you have uploaded; this only stops the file growing for ever
 end }
 
 -- ---------------------------------------------------------------------------------------------
@@ -203,6 +204,14 @@ function ns.Debug()
   put("events", #ns.db.events)
   put("owned", #ns.db.owned)
   put("sightings", #ns.db.sightings)
+  put("loot", tostring(ns.db.lootShare) .. " install=" .. tostring(ns.db.install))
+  local hasLoot = {}
+  for _, name in ipairs({ "GetLootSourceInfo", "GetLootSlotLink", "GetLootSlotInfo", "GetLootSlotType", "IsFishingLoot", "GetMerchantItemID",
+    "GetMerchantItemInfo", "GetQuestItemLink", "GetInstanceInfo", "UnitClassification" }) do
+    hasLoot[#hasLoot + 1] = name .. "=" .. (_G[name] and "yes" or "no")
+  end
+  hasLoot[#hasLoot + 1] = "C_MerchantFrame=" .. ((C_MerchantFrame and C_MerchantFrame.GetItemInfo) and "yes" or "no")
+  put("lootApis", table.concat(hasLoot, " "))
   put("lastInvoice", ns.db.debug.lastInvoice or "")
   put("lastError", ns.db.debug.lastError or "")
   put("time", time())
@@ -228,8 +237,10 @@ SlashCmdList["WOWFAH"] = function(msg)
   elseif msg == "share on" or msg == "share off" then
     ns.db.share = (msg == "share on")
     ns.Print("Sharing anonymous sale prices with wowfah.com is now " .. (ns.db.share and "on" or "off") .. ".")
+  elseif msg == "loot on" or msg == "loot off" then
+    if ns.SetLoot then ns.SetLoot(msg == "loot on") end
   elseif msg == "help" then
-    ns.Print("/wowfah (open the ledger), /wowfah export, /wowfah path, /wowfah share on|off, /wowfah debug")
+    ns.Print("/wowfah (open the ledger), /wowfah export, /wowfah path, /wowfah share on|off, /wowfah loot on|off, /wowfah debug")
   else
     if ns.ToggleUI then ns.ToggleUI() end
   end

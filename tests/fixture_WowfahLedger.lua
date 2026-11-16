@@ -1,6 +1,6 @@
 
 WowfahLedgerDB = {
-	["addon"] = "0.3.0",
+	["addon"] = "0.4.0",
 	["chars"] = {
 		["Thrall-ForeverPvE1"] = "3|Horde|1|0|0|18|1794754460",
 	},
@@ -13,9 +13,11 @@ WowfahLedgerDB = {
 		["build"] = "1.60.1 70938 toc 16001",
 		["events"] = "15",
 		["faction"] = "Horde",
-		["lastAH"] = "1794754460|1454|||Thrall|",
+		["lastAH"] = "1794754460|1454|The Barrens|The Crossroads|Thrall|",
 		["lastError"] = "",
 		["lastInvoice"] = "buyer Murloc Skin Bag 1998 0 0 0 1",
+		["loot"] = "nil install=4a208000b000",
+		["lootApis"] = "GetLootSourceInfo=yes GetLootSlotLink=yes GetLootSlotInfo=yes GetLootSlotType=yes IsFishingLoot=yes GetMerchantItemID=yes GetMerchantItemInfo=yes GetQuestItemLink=yes GetInstanceInfo=yes UnitClassification=yes C_MerchantFrame=no",
 		["map"] = "1454",
 		["npc"] = "Thrall / none",
 		["owned"] = "7",
@@ -26,7 +28,7 @@ WowfahLedgerDB = {
 		["soldMessages"] = "1",
 		["subjects"] = "expired=Auction expired: %s removed=Auction cancelled: %s sold=nil won=nil",
 		["time"] = "1794754460",
-		["zone"] = " / ",
+		["zone"] = "The Barrens / The Crossroads",
 	},
 	["events"] = {
 		"posted|1794750000|Thrall-ForeverPvE1|12640|Lionheart Helm|1|4500000|150|0|0|555001|1454", -- [1]
@@ -45,6 +47,25 @@ WowfahLedgerDB = {
 		"purchase|1794754460|Thrall-ForeverPvE1|1470|Murloc Skin Bag|1|1998|0|0|-1998|0|1454", -- [14]
 		"purchase|1794754460|Thrall-ForeverPvE1|1470|Murloc Skin Bag|1|1998|0|0|-1998|0|1454", -- [15]
 	},
+	["install"] = "4a208000b000",
+	["lootItems"] = {
+		["c:3273:1454:0:2589"] = "2|3|0",
+		["c:3273:1454:8613:2318"] = "1|1|0",
+		["c:3274:1454:0:2589"] = "1|2|0",
+		["c:3274:1454:0:4306"] = "1|1|1",
+		["f:0:1454:0:6291"] = "2|2|0",
+		["i:5523:1454:0:5498"] = "1|1|0",
+		["o:1731:1454:2575:2770"] = "1|3|0",
+	},
+	["lootShare"] = true,
+	["lootSrc"] = {
+		["c:3273:1454:0"] = "Kolkar Stormer|The Barrens|The Crossroads||12|normal||3",
+		["c:3273:1454:8613"] = "|The Barrens|The Crossroads||0|||1",
+		["c:3274:1454:0"] = "|The Barrens|The Crossroads||0|||1",
+		["f:0:1454:0"] = "|The Barrens|The Crossroads||0|||2",
+		["i:5523:1454:0"] = "|The Barrens|The Crossroads||0|||1",
+		["o:1731:1454:2575"] = "Copper Vein|The Barrens|The Crossroads||0|||1",
+	},
 	["owned"] = {
 		"555001|12640|1794750000|Thrall-ForeverPvE1|1454", -- [1]
 		"555002|3860|1794750000|Thrall-ForeverPvE1|1454", -- [2]
@@ -57,6 +78,9 @@ WowfahLedgerDB = {
 	["postings"] = {
 		"Strange Dust|10940|20|100|777001|1794754380|3380", -- [1]
 	},
+	["quests"] = {
+		["870"] = "The Forgotten Pools|10|The Barrens|4306:2|2589:1,2770:1",
+	},
 	["seen"] = {
 	},
 	["share"] = false,
@@ -64,4 +88,11 @@ WowfahLedgerDB = {
 		"1794754460|Thrall-ForeverPvE1|1454|3860|1085|4652", -- [1]
 	},
 	["v"] = 1,
+	["vendorItems"] = {
+		["3489:2320"] = "10|1|-1|0",
+		["3489:6270"] = "200|1|1|0",
+	},
+	["vendors"] = {
+		["3489:1454"] = "Wrahk|The Barrens|The Crossroads|1794754580",
+	},
 }

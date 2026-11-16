@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.4.0
+
+- New, and off until you say yes: the addon can note what drops where. It asks once at login. If you agree it counts
+  loot from creatures, gathering nodes, fishing, opened containers, what vendors sell and what quests reward, with the
+  zone, and includes that when you upload. No character names are recorded. Turn it on or off with `/wowfah loot on`
+  and `/wowfah loot off`, or the new checkbox in the ledger window.
+- The saved file no longer grows for ever: it keeps your newest 20,000 records. The website keeps everything you
+  have already uploaded.
+- `/wowfah debug` reports which loot functions the game provides.
+
 ## 0.3.0
 
 - A mail is now recorded when its gold or items have actually left it, not when you click. Before, a take

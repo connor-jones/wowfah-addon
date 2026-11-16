@@ -6,12 +6,14 @@ local _, ns = ...
 -- one line per record; the first field says what the line is
 function ns.BuildLines()
   local db = ns.db
-  local out = { ns.Row("V", db.v or 1, ns.VERSION, db.share and 1 or 0, time()) }
+  local out = { ns.Row("V", db.v or 1, ns.VERSION, db.share and 1 or 0, time(),
+    db.lootShare == nil and "" or (db.lootShare and 1 or 0), db.install or "") }    -- blank: the loot question is not answered yet
   for key, row in pairs(db.chars) do out[#out + 1] = "C|" .. ns.Clean(key) .. "|" .. row end
   for i = 1, #db.events do out[#out + 1] = "E|" .. db.events[i] end
   for i = 1, #db.owned do out[#out + 1] = "O|" .. db.owned[i] end
   for i = 1, #db.sightings do out[#out + 1] = "S|" .. db.sightings[i] end
   for k, v in pairs(db.debug) do out[#out + 1] = ns.Row("D", k, v) end
+  if ns.LootLines then ns.LootLines(out) end
   return out
 end
 
