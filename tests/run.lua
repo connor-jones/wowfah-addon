@@ -122,9 +122,9 @@ C_Container = { UseContainerItem = function() end, GetContainerItemID = function
 
 -- ---- load the addon the way the game does ----
 local ns = {}
-local toc = io.open("WowfahLedger/WowfahLedger.toc"):read("*a")
+local toc = io.open("WowfahLedger.toc"):read("*a")
 for file in toc:gmatch("\n([%w_]+%.lua)") do
-  local chunk = assert(loadfile("WowfahLedger/" .. file))
+  local chunk = assert(loadfile(file))
   chunk("WowfahLedger", ns)
 end
 local function fire(event, ...) ns.frame.onOnEvent(ns.frame, event, ...) end
@@ -218,7 +218,7 @@ check("deleting an emptied mail records nothing", #events("sale"), 1)
 -- next session: the emptied sale mail is still in the inbox, a fresh addon state
 local saved = WowfahLedgerDB
 local ns2 = {}
-for file in toc:gmatch("\n([%w_]+%.lua)") do assert(loadfile("WowfahLedger/" .. file))("WowfahLedger", ns2) end
+for file in toc:gmatch("\n([%w_]+%.lua)") do assert(loadfile(file))("WowfahLedger", ns2) end
 WowfahLedgerDB = saved
 ns2.frame.onOnEvent(ns2.frame, "ADDON_LOADED", "WowfahLedger")
 ns2.frame.onOnEvent(ns2.frame, "PLAYER_LOGIN")
