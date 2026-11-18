@@ -316,12 +316,19 @@ check("debug stored", WowfahLedgerDB.debug.UnitFullName, "Thrall / ForeverPvE1")
 local reloads = 0
 ReloadUI = function() reloads = reloads + 1 end
 SlashCmdList["WOWFAH"]("sync")
+check("no reload without the wowfah Sync app", reloads, 0)
+WowfahSyncApp = { version = "0.2.1", seen = time() - 30 * 86400 }
+SlashCmdList["WOWFAHSYNC"]("")
+check("a stale app mark does not count", reloads, 0)
+WowfahSyncApp = { version = "0.2.1", seen = time() }
+SlashCmdList["WOWFAH"]("sync")
 SlashCmdList["WOWFAHSYNC"]("")
 check("sync command reloads to save", reloads, 2)
 InCombatLockdown = function() return true end
 SlashCmdList["WOWFAHSYNC"]("")
 check("no reload in combat", reloads, 2)
 InCombatLockdown = nil
+WowfahSyncApp = nil
 SlashCmdList["WOWFAH"]("share off")
 check("share off", WowfahLedgerDB.share, false)
 SlashCmdList["WOWFAH"]("")

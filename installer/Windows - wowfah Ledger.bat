@@ -88,7 +88,7 @@ for /f "delims=" %%F in ('dir /b /s "!WOW!\!FL!\WTF\Account\WowfahLedger.lua" 2^
 )
 if not defined FOUND (
   echo.
-  echo   No ledger file yet. The game writes it when you log out or type /sync
+  echo   No ledger file yet. The game writes it when you log out or type /reload
   echo   with the addon turned on. Do that, then choose 2 again.
   goto :end
 )

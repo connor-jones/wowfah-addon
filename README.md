@@ -33,15 +33,17 @@ then restart the game or type `/reload`.
 
 - Click the wowfah button on the minimap to open the ledger. There is also a button on the auction house and the
   mailbox. `/wowfah` does the same.
-- Click **Save and sync** in the ledger window, or type `/sync`, to save your ledger without logging out. It reloads the
-  interface, which is the only way the game saves an addon's data in the middle of a session.
+- **Manual upload** in the ledger window shows a code to paste at wowfah.com/ledger/upload. It needs nothing else.
+- **Save and sync** (or `/sync`) is for people who run the optional wowfah Sync app for Windows (wowfah.com/sync): it
+  reloads the interface so the game saves your ledger, and the app uploads it a few seconds later. The button is
+  greyed out until the app is set up on the computer.
 - `/wowfah export` shows a code to paste at wowfah.com/ledger/upload.
 - `/wowfah path` tells you which saved file to upload.
 - `/wowfah share on` or `/wowfah share off` controls whether your uploads add anonymous sale prices to the site.
 - `/wowfah debug` saves technical details that help with bug reports.
 
-The game only writes the saved file when you log out or the interface reloads (**Save and sync**, or `/sync`), so do
-one of those before uploading.
+The game only writes the saved file when you log out or the interface reloads (`/reload`), so do one of those before uploading the
+saved file by hand.
 
 ## Getting your data onto wowfah.com
 

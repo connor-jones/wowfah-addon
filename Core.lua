@@ -3,7 +3,7 @@
 -- Other players' names are never stored.
 
 local ADDON, ns = ...
-ns.VERSION = "0.6.1"
+ns.VERSION = "0.6.2"
 ns.SEP = "|"
 
 local MAX_SIGHTINGS, MAX_OWNED, MAX_POSTINGS, MAX_SEEN, MAX_EVENTS = 4000, 400, 300, 400, 20000
@@ -225,7 +225,19 @@ end
 
 -- The game writes this addon's data to disk only on logout, exit or an interface reload. Reloading on request is the
 -- one way to save in the middle of a session, so the wowfah Sync app (or a manual upload) has something new to send.
+-- Is the wowfah Sync app set up on this computer? The app rewrites SyncApp.lua in this folder with the time it last
+-- ran; the game reads that file when it loads. A mark older than three weeks means the app has gone.
+function ns.HasSyncApp()
+  local m = WowfahSyncApp
+  return type(m) == "table" and type(m.seen) == "number" and (time() - m.seen) < 21 * 86400
+end
+
 function ns.SaveNow()
+  if not ns.HasSyncApp() then
+    ns.Print("Save and sync needs the free wowfah Sync app for Windows, which uploads for you: wowfah.com/sync")
+    ns.Print("Without it, click Manual upload in the ledger window (or type /wowfah export). If you have just set the app up, type /reload once.")
+    return false
+  end
   if InCombatLockdown and InCombatLockdown() then
     ns.Print("You are in combat. Try again when the fight is over.")
     return false
@@ -252,7 +264,7 @@ SlashCmdList["WOWFAH"] = function(msg)
   elseif msg == "export" then
     if ns.ShowExport then ns.ShowExport() end
   elseif msg == "path" then
-    ns.Print("Log out or type /sync, then upload this file at wowfah.com/ledger/upload:")
+    ns.Print("Log out or type /reload, then upload this file at wowfah.com/ledger/upload:")
     ns.Print("World of Warcraft/_forever_/WTF/Account/YOUR_ACCOUNT/SavedVariables/WowfahLedger.lua")
   elseif msg == "share on" or msg == "share off" then
     ns.db.share = (msg == "share on")
@@ -265,7 +277,7 @@ SlashCmdList["WOWFAH"] = function(msg)
       ns.Print("The minimap button is now " .. (ns.db.minimap.hide and "hidden. Type /wowfah minimap to bring it back." or "shown."))
     end
   elseif msg == "help" then
-    ns.Print("/wowfah (open the ledger), /sync (save now, so it can be uploaded), /wowfah export, /wowfah path, /wowfah share on|off, /wowfah loot on|off, /wowfah minimap, /wowfah debug")
+    ns.Print("/wowfah (open the ledger), /sync (save and upload with the wowfah Sync app), /wowfah export (manual upload code), /wowfah path, /wowfah share on|off, /wowfah loot on|off, /wowfah minimap, /wowfah debug")
   else
     if ns.ToggleUI then ns.ToggleUI() end
   end

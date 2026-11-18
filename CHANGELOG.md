@@ -1,11 +1,13 @@
 # Changelog
 
-## 0.6.1
+## 0.6.2
 
-- New: a **Save and sync** button in the ledger window, and the command `/sync`. The game only saves an addon's data
-  when you log out or the interface reloads, so this reloads it for you. If you run the wowfah Sync app, your ledger
-  on wowfah.com is up to date a few seconds later, without logging out.
-- It will not reload while you are in combat.
+- New: a **Save and sync** button in the ledger window, and the command `/sync`, for people who run the optional
+  wowfah Sync app for Windows (wowfah.com/sync). The game only saves an addon's data when you log out or the interface
+  reloads, so this reloads it for you and the app uploads your ledger a few seconds later, without logging out.
+- The button is greyed out until wowfah Sync is set up on the computer, and it will not reload while you are in combat.
+- **Upload to wowfah.com** is now called **Manual upload**: it shows a code to paste on the site and needs nothing else
+  installed.
 
 ## 0.6.0
 

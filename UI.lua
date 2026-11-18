@@ -143,22 +143,32 @@ local function build()
   hint:SetPoint("BOTTOMLEFT", 16, 16)
   hint:SetText("More at wowfah.com/ledger")
   local settings
-  local up = ns.Button(f, "Upload to wowfah.com", 170, function() if ns.ShowExport then ns.ShowExport() end end, true)
-  up:SetPoint("BOTTOMRIGHT", -14, 14)
-  local set = ns.Button(f, "Settings", 90, function() if settings:IsShown() then settings:Hide() else settings:Show() end end)
-  set:SetPoint("RIGHT", up, "LEFT", -6, 0)
-  -- saving needs an interface reload; one click here instead of typing a command
-  local save = ns.Button(f, "Save and sync", 120, function() if ns.SaveNow then ns.SaveNow() end end)
-  save:SetPoint("RIGHT", set, "LEFT", -6, 0)
-  if save.HookScript and GameTooltip then
-    save:HookScript("OnEnter", function(self)
+  -- two ways to get the ledger onto the site: by hand (always there), or with the wowfah Sync app when it is set up
+  local hasApp = ns.HasSyncApp and ns.HasSyncApp()
+  local function tip(button, title, text)
+    if not (button.HookScript and GameTooltip) then return end
+    button:HookScript("OnEnter", function(self)
       GameTooltip:SetOwner(self, "ANCHOR_TOP")
-      GameTooltip:AddLine("Save and sync")
-      GameTooltip:AddLine("Reloads the interface so the game saves your ledger. If you run wowfah Sync, it uploads a few seconds later. Typing /sync does the same.", 1, 1, 1, true)
+      GameTooltip:AddLine(title)
+      GameTooltip:AddLine(text, 1, 1, 1, true)
       GameTooltip:Show()
     end)
-    save:HookScript("OnLeave", function() GameTooltip:Hide() end)
+    button:HookScript("OnLeave", function() GameTooltip:Hide() end)
   end
+  local up = ns.Button(f, "Manual upload", 120, function() if ns.ShowExport then ns.ShowExport() end end, not hasApp)
+  up:SetPoint("BOTTOMRIGHT", -14, 14)
+  tip(up, "Manual upload", "Shows a code to copy and paste at wowfah.com/ledger/upload. Works on any computer, with nothing else installed.")
+  local save = ns.Button(f, "Save and sync", 120, function() if ns.SaveNow then ns.SaveNow() end end, hasApp)
+  save:SetPoint("RIGHT", up, "LEFT", -6, 0)
+  if hasApp then
+    tip(save, "Save and sync", "Reloads the interface so the game saves your ledger. The wowfah Sync app uploads it a few seconds later. Typing /sync does the same.")
+  else
+    if save.SetAlpha then save:SetAlpha(0.4) end
+    tip(save, "Save and sync (needs wowfah Sync)", "Uploads for you, with no copying and pasting. It needs the free wowfah Sync app for Windows: wowfah.com/sync. If you have just set the app up, type /reload once. Until then, use Manual upload.")
+  end
+  f.save = save
+  local set = ns.Button(f, "Settings", 90, function() if settings:IsShown() then settings:Hide() else settings:Show() end end)
+  set:SetPoint("RIGHT", save, "LEFT", -6, 0)
 
   -- settings: a small panel over the list, so nobody needs a slash command
   settings = CreateFrame("Frame", nil, f)
@@ -182,7 +192,7 @@ local function build()
   local note = ns.Text(settings, "small", C.dim)
   note:SetPoint("TOPLEFT", 14, -120)
   note:SetWidth(W - 60)
-  note:SetText("Nothing leaves your computer until you upload. The game saves this addon's data when you log out or press Save and sync, so do one of those before uploading the saved file. The Upload button gives you a code to paste instead.")
+  note:SetText("Nothing leaves your computer until you upload. Manual upload gives a code to paste on the site and needs nothing else. Save and sync needs the wowfah Sync app. The Upload button gives you a code to paste instead.")
   local done = ns.Button(settings, "Done", 80, function() settings:Hide() end)
   done:SetPoint("BOTTOMRIGHT", -10, 10)
   f.settings = settings
