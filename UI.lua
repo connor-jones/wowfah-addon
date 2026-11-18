@@ -141,12 +141,24 @@ local function build()
   f.scope:SetPoint("BOTTOMLEFT", 12, 38)
   local hint = ns.Text(f, "small", C.dim)
   hint:SetPoint("BOTTOMLEFT", 16, 16)
-  hint:SetText("Charts, flips and undercut checks are at wowfah.com/ledger")
+  hint:SetText("More at wowfah.com/ledger")
   local settings
   local up = ns.Button(f, "Upload to wowfah.com", 170, function() if ns.ShowExport then ns.ShowExport() end end, true)
   up:SetPoint("BOTTOMRIGHT", -14, 14)
   local set = ns.Button(f, "Settings", 90, function() if settings:IsShown() then settings:Hide() else settings:Show() end end)
   set:SetPoint("RIGHT", up, "LEFT", -6, 0)
+  -- saving needs an interface reload; one click here instead of typing a command
+  local save = ns.Button(f, "Save and sync", 120, function() if ns.SaveNow then ns.SaveNow() end end)
+  save:SetPoint("RIGHT", set, "LEFT", -6, 0)
+  if save.HookScript and GameTooltip then
+    save:HookScript("OnEnter", function(self)
+      GameTooltip:SetOwner(self, "ANCHOR_TOP")
+      GameTooltip:AddLine("Save and sync")
+      GameTooltip:AddLine("Reloads the interface so the game saves your ledger. If you run wowfah Sync, it uploads a few seconds later. Typing /sync does the same.", 1, 1, 1, true)
+      GameTooltip:Show()
+    end)
+    save:HookScript("OnLeave", function() GameTooltip:Hide() end)
+  end
 
   -- settings: a small panel over the list, so nobody needs a slash command
   settings = CreateFrame("Frame", nil, f)
@@ -170,7 +182,7 @@ local function build()
   local note = ns.Text(settings, "small", C.dim)
   note:SetPoint("TOPLEFT", 14, -120)
   note:SetWidth(W - 60)
-  note:SetText("Nothing leaves your computer until you upload. The game saves this addon's data when you log out or reload, so do one of those before uploading the saved file. The Upload button gives you a code to paste instead.")
+  note:SetText("Nothing leaves your computer until you upload. The game saves this addon's data when you log out or press Save and sync, so do one of those before uploading the saved file. The Upload button gives you a code to paste instead.")
   local done = ns.Button(settings, "Done", 80, function() settings:Hide() end)
   done:SetPoint("BOTTOMRIGHT", -10, 10)
   f.settings = settings

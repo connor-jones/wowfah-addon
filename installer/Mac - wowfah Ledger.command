@@ -62,7 +62,7 @@ case "${PICK:-1}" in
     FILES=()
     while IFS= read -r f; do FILES+=("$f"); done < <(find "$WOW/$FL/WTF/Account" -name "WowfahLedger.lua" -path "*SavedVariables*" 2>/dev/null)
     if [ ${#FILES[@]} -eq 0 ]; then
-      echo; echo "  No ledger file yet. The game writes it when you log out or type /reload"
+      echo; echo "  No ledger file yet. The game writes it when you log out or type /sync"
       echo "  with the addon turned on. Do that, then choose 2 again."
     else
       NEWEST="$(ls -t "${FILES[@]}" | head -1)"

@@ -313,6 +313,15 @@ ns2.frame.onOnEvent(ns2.frame, "CHAT_MSG_SYSTEM", "A buyer has been found for yo
 check("sold message counted", WowfahLedgerDB.debug.soldMessages, 1)
 SlashCmdList["WOWFAH"]("debug")
 check("debug stored", WowfahLedgerDB.debug.UnitFullName, "Thrall / ForeverPvE1")
+local reloads = 0
+ReloadUI = function() reloads = reloads + 1 end
+SlashCmdList["WOWFAH"]("sync")
+SlashCmdList["WOWFAHSYNC"]("")
+check("sync command reloads to save", reloads, 2)
+InCombatLockdown = function() return true end
+SlashCmdList["WOWFAHSYNC"]("")
+check("no reload in combat", reloads, 2)
+InCombatLockdown = nil
 SlashCmdList["WOWFAH"]("share off")
 check("share off", WowfahLedgerDB.share, false)
 SlashCmdList["WOWFAH"]("")

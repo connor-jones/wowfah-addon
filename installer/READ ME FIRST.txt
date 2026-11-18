@@ -20,7 +20,7 @@ THEN
   3. Play as normal. Sales and purchases are recorded as you collect auction house mail.
 
 TO SEE YOUR HISTORY ON WOWFAH.COM
-  1. Log out or type /reload so the game saves the addon's file.
+  1. Log out, or click Save and sync in the ledger window (or type /sync), so the game saves the addon's file.
   2. Run the same file again and choose 2. It finds the file and opens the upload page.
      Or type /wowfah export in game and paste the code at https://wowfah.com/ledger/upload
 
