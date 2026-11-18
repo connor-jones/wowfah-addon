@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.3
+
+- First version published on CurseForge. The addon itself is the same as 0.6.2.
+
 ## 0.6.2
 
 - New: a **Save and sync** button in the ledger window, and the command `/sync`, for people who run the optional
