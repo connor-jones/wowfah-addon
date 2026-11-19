@@ -1,6 +1,6 @@
 
 WowfahLedgerDB = {
-	["addon"] = "0.6.0",
+	["addon"] = "0.7.0",
 	["chars"] = {
 		["Thrall-ForeverPvE1"] = "3|Horde|1|0|0|18|1794754580",
 	},
@@ -51,6 +51,12 @@ WowfahLedgerDB = {
 		"expired|1794759580|Thrall-ForeverPvE1|2589|Linen Cloth|20|0|30|0|0|777002|1454", -- [18]
 		"posted|1794759580|Thrall-ForeverPvE1|2589|Linen Cloth|20|600|30|0|0|777003|1454", -- [19]
 	},
+	["exportedAt"] = 1794754580,
+	["gold"] = {
+		"1794754460|Thrall-ForeverPvE1|1234567", -- [1]
+		"1794754460|Thrall-ForeverPvE1|1300000", -- [2]
+		"1794754460|Thrall-ForeverPvE1|1300000", -- [3]
+	},
 	["install"] = "4a208000b000",
 	["lootItems"] = {
 		["c:3273:1454:0:2589"] = "2|3|0",
@@ -80,8 +86,8 @@ WowfahLedgerDB = {
 		"555003|2589|1794750000|Thrall-ForeverPvE1|1454", -- [3]
 		"777001|10940|1794754380|Thrall-ForeverPvE1|1454", -- [4]
 		"777002|10940|1794754380|Thrall-ForeverPvE1|1454", -- [5]
-		"9001|3860|1794754460|Thrall-ForeverPvE1|1454", -- [6]
-		"9002|3860|1794754460|Thrall-ForeverPvE1|1454", -- [7]
+		"9001|3860|1794754460|Thrall-ForeverPvE1|1454|1200|20", -- [6]
+		"9002|3860|1794754460|Thrall-ForeverPvE1|1454|1000|20", -- [7]
 	},
 	["postings"] = {
 		"Strange Dust|10940|20|100|777001|1794754380|3380", -- [1]
@@ -95,6 +101,7 @@ WowfahLedgerDB = {
 	["sightings"] = {
 		"1794754460|Thrall-ForeverPvE1|1454|3860|1085|4652", -- [1]
 	},
+	["tips"] = true,
 	["v"] = 1,
 	["vendorItems"] = {
 		["3489:2320"] = "10|1|-1|0",

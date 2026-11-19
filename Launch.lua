@@ -31,6 +31,8 @@ local function tip(owner, anchor)
   GameTooltip:SetOwner(owner, anchor or "ANCHOR_LEFT")
   GameTooltip:AddLine("wowfah Ledger")
   GameTooltip:AddLine(ns.TodayLine and ns.TodayLine() or "", 1, 1, 1)
+  local beaten = ns.BeatenCount and ns.BeatenCount() or 0
+  if beaten > 0 then GameTooltip:AddLine(beaten .. " of your auctions beaten on price", 0.9, 0.45, 0.4) end
   GameTooltip:AddLine("Click to open your ledger", 0.6, 0.65, 0.6)
   GameTooltip:AddLine("Right-click for an upload code", 0.6, 0.65, 0.6)
   GameTooltip:Show()

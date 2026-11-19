@@ -84,7 +84,8 @@ C_AuctionHouse = {
   CalculateItemDeposit = function() return 150 end, CalculateCommodityDeposit = function(_, _, qty) return 5 * qty end,
   GetBrowseResults = function() return { { itemKey = { itemID = 3860 }, minPrice = 1085, totalQuantity = 4652 }, { itemKey = { itemID = 4306 }, minPrice = 0, totalQuantity = 3 } } end,
   GetNumOwnedAuctions = function() return 2 end,
-  GetOwnedAuctionInfo = function(i) return { auctionID = 9000 + i, itemKey = { itemID = 3860 }, status = 0 } end,
+  GetOwnedAuctionInfo = function(i) return { auctionID = 9000 + i, itemKey = { itemID = 3860 }, status = 0, quantity = 20,
+    buyoutAmount = i == 1 and 1200 or 1000, timeLeftSeconds = 7200 * i, itemLink = "|Hitem:3860::::|h[Mithril Bar]|h" } end,
   QueryOwnedAuctions = function() end,
 }
 
@@ -307,6 +308,65 @@ check("price sightings (zero price skipped, repeats skipped)", #WowfahLedgerDB.s
 ns2.frame.onOnEvent(ns2.frame, "OWNED_AUCTIONS_UPDATED")
 ns2.frame.onOnEvent(ns2.frame, "OWNED_AUCTIONS_UPDATED")
 check("owned auction ids (5 posted + 2 listed, no repeats)", #WowfahLedgerDB.owned, 7)
+
+-- 0.7.0: own auctions against the lowest price browsed, item lines, holding, gold, what is not uploaded yet
+local mine = ns2.MyAuctions()
+check("own auctions listed with their price", #mine, 2)
+check("the dearer auction is beaten by the price browsed (1085)", mine[1].beaten and mine[1].each, 1200)
+check("the cheaper auction is not", mine[2].beaten, false)
+check("beaten count", ns2.BeatenCount(), 1)
+check("owned row carries price and quantity", WowfahLedgerDB.owned[#WowfahLedgerDB.owned]:match("|1000|20$") ~= nil, true)
+local low, lowAt = ns2.LastSeen(3860)
+check("lowest price seen", low, 1085)
+check("lowest price seen has its time", lowAt, time())
+local st = ns2.ItemStats(3860)
+check("item stats: units sold", st and st.soldQty, 20)
+check("item stats: average sale each", st and st.soldGross / st.soldQty, 1100)
+local labels = {}
+for _, l in ipairs(ns2.ItemLines(3860)) do labels[#labels + 1] = l[1] end
+check("item lines for a traded, browsed item", table.concat(labels, ","), "You sold,Lowest you saw")
+check("no lines for an item you never touched", #ns2.ItemLines(123456), 0)
+WowfahPrices = { at = time() - 3600, p = { [3860] = 1090 } }
+check("site price shown when the Sync app left one", ns2.SitePrice(3860), 1090)
+WowfahPrices.at = time() - 3 * 86400
+check("a stale site price is not shown", ns2.SitePrice(3860), nil)
+WowfahPrices = nil
+local tipLines = {}
+local fakeTip = { AddDoubleLine = function(_, a, b) tipLines[#tipLines + 1] = a .. "=" .. b end, Show = function() end }
+ns2._tooltip.add(fakeTip, 3860)
+check("tooltip gets the lines", #tipLines, 2)
+WowfahLedgerDB.tips = false
+ns2._tooltip.add(fakeTip, 3860)
+check("tooltip lines can be switched off", #tipLines, 2)
+WowfahLedgerDB.tips = true
+check("posting line names your last sale", ns2.PostingLine(3860):match("^Your last sale ") ~= nil, true)
+local held = ns2.Holding()
+local heldIron
+for _, h in ipairs(held) do if h.id == 4306 then heldIron = h end end
+check("holding: bought and not sold again", heldIron and heldIron.qty, 12)
+check("holding: what the unsold part cost", heldIron and heldIron.cost, 2400)
+local money = 1234567
+GetMoney = function() return money end
+local g0 = #WowfahLedgerDB.gold
+ns2.NoteGold(); ns2.NoteGold()
+check("gold noted once while it has not changed", #WowfahLedgerDB.gold - g0, 1)
+money = 1300000
+ns2.NoteGold()
+check("gold not noted again within the hour", #WowfahLedgerDB.gold - g0, 1)
+ns2.NoteGold(true)
+check("gold always noted at logout", WowfahLedgerDB.gold[#WowfahLedgerDB.gold]:match("|1300000$") ~= nil, true)
+local fresh, last = ns2.NotUploaded()
+check("everything is new before the first upload", fresh > 0 and last, nil)
+ns2.ShowExport()
+fresh, last = ns2.NotUploaded()
+check("nothing new straight after an upload code", fresh, 0)
+check("the upload time is kept", last, time())
+local chatBefore = #chat
+ns2.ToggleUI()
+for tab = 1, 6 do ns2.ShowTab(tab) end
+local broke
+for i = chatBefore + 1, #chat do if chat[i]:find("could not") then broke = chat[i] end end
+check("the window builds and every view fills without an error", broke, nil)
 
 -- chat line, slash commands, export
 ns2.frame.onOnEvent(ns2.frame, "CHAT_MSG_SYSTEM", "A buyer has been found for your auction of Mithril Bar.")

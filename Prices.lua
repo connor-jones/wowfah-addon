@@ -14,6 +14,7 @@ local function sight(itemID, minPrice, qty)
   lastSeen[itemID] = now
   -- time|character|map|itemID|minPrice|quantity
   table.insert(ns.db.sightings, ns.Row(now, ns.charKey or "", ns.MapID(), itemID, minPrice, qty or 0))
+  if ns.NoteSighting then ns.NoteSighting(itemID, minPrice, now) end
 end
 
 ns.On("AUCTION_HOUSE_BROWSE_RESULTS_UPDATED", function()
@@ -35,15 +36,26 @@ end)
 local function readOwned()
   if not (C_AuctionHouse and C_AuctionHouse.GetNumOwnedAuctions and C_AuctionHouse.GetOwnedAuctionInfo) then return end
   local n = ns.Try(C_AuctionHouse.GetNumOwnedAuctions) or 0
+  local now = {}
   for i = 1, n do
     local info = ns.Try(C_AuctionHouse.GetOwnedAuctionInfo, i)
-    if type(info) == "table" and info.auctionID and not ownedSeen[info.auctionID] then
-      ownedSeen[info.auctionID] = true
+    if type(info) == "table" and info.auctionID then
       local itemID = info.itemKey and info.itemKey.itemID or 0
-      -- auctionID|itemID|time|character|map
-      table.insert(ns.db.owned, ns.Row(info.auctionID, itemID, time(), ns.charKey or "", ns.MapID()))
+      local qty = tonumber(info.quantity) or 1
+      local each = tonumber(info.buyoutAmount) or 0          -- the game gives the buyout for one
+      local name = info.itemLink and tostring(info.itemLink):match("%[(.-)%]")
+      if not name and itemID > 0 then name = (C_Item and C_Item.GetItemInfo and ns.Try(C_Item.GetItemInfo, itemID)) or (GetItemInfo and ns.Try(GetItemInfo, itemID)) end
+      now[info.auctionID] = { id = itemID, name = name or ("item " .. itemID), qty = qty, each = each,
+        left = tonumber(info.timeLeftSeconds), sold = info.status == 1 }
+      if not ownedSeen[info.auctionID] then
+        ownedSeen[info.auctionID] = true
+        -- auctionID|itemID|time|character|map|price each|quantity
+        table.insert(ns.db.owned, ns.Row(info.auctionID, itemID, time(), ns.charKey or "", ns.MapID(), each, qty))
+      end
     end
   end
+  ns.ownedNow = now          -- the whole list as the game has it now, so sold and cancelled auctions drop out
+  if ns.RefreshUI then ns.RefreshUI() end
 end
 
 ns.On("OWNED_AUCTIONS_UPDATED", readOwned)

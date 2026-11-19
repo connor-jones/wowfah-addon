@@ -3,10 +3,10 @@
 -- Other players' names are never stored.
 
 local ADDON, ns = ...
-ns.VERSION = "0.6.3"
+ns.VERSION = "0.7.0"
 ns.SEP = "|"
 
-local MAX_SIGHTINGS, MAX_OWNED, MAX_POSTINGS, MAX_SEEN, MAX_EVENTS = 4000, 400, 300, 400, 20000
+local MAX_SIGHTINGS, MAX_OWNED, MAX_POSTINGS, MAX_SEEN, MAX_EVENTS, MAX_GOLD = 4000, 400, 300, 400, 20000, 600
 
 -- ---------------------------------------------------------------------------------------------
 -- small helpers
@@ -70,6 +70,8 @@ function ns.InitDB()
   db.owned = db.owned or {}        -- auction ids of your own auctions (confirms which house you use)
   db.sightings = db.sightings or {}-- prices seen while you browse
   db.seen = db.seen or {}          -- fingerprints of mail already recorded
+  db.gold = db.gold or {}          -- your gold at login and logout: "time|character|copper"
+  if db.tips == nil then db.tips = true end     -- your own prices on item tooltips
   db.debug = db.debug or {}
   ns.db = db
   return db
@@ -155,10 +157,13 @@ ns.handlers["PLAYER_LOGIN"] = { function()
   if not ns.db then ns.InitDB() end
   ns.UpdateCharacter()
   if ns.InstallHooks then ns.InstallHooks() end
+  if ns.NoteGold then ns.NoteGold() end
 end }
 
 ns.handlers["PLAYER_LOGOUT"] = { function()
   if not ns.db then return end
+  if ns.NoteGold then ns.NoteGold(true) end
+  ns.Trim(ns.db.gold, MAX_GOLD)
   ns.Trim(ns.db.sightings, MAX_SIGHTINGS)
   ns.Trim(ns.db.owned, MAX_OWNED)
   ns.Trim(ns.db.postings, MAX_POSTINGS)

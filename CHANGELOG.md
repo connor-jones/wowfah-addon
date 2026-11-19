@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.7.0
+
+- New: **your own prices on item tooltips**. Hover any item to see what you sold it for, what you paid, and the lowest
+  price you last saw for it at the auction house. Switch it off in Settings if you prefer a clean tooltip.
+- New: the same figures appear **beside the price box when you post an auction**, so you can price without leaving the
+  window. The addon only shows them. It never sets a price, posts, buys or cancels anything.
+- New: the ledger window has six views: Recent, **Items** (profit per item), **Days**, **Characters**, **Holding** (bought
+  and not sold again) and **My auctions**. Click one of the four profit cards to choose the period, and scroll the list
+  for more rows.
+- New: **My auctions** compares each of your auctions with the lowest price you last browsed for that item and marks the
+  ones that have been beaten. You also get one line in chat when you open the auction house.
+- New: the window tells you how many records are **not on wowfah.com yet** and when you last uploaded.
+- New: your gold is noted at login and logout, so wowfah.com can show it over time once you upload.
+- With the wowfah Sync app, tooltips can also show the wowfah market price for the items on your watchlist and in your
+  ledger (needs a newer version of the app).
+
 ## 0.6.3
 
 - First version published on CurseForge. The addon itself is the same as 0.6.2.

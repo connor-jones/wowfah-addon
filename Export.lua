@@ -12,6 +12,7 @@ function ns.BuildLines()
   for i = 1, #db.events do out[#out + 1] = "E|" .. db.events[i] end
   for i = 1, #db.owned do out[#out + 1] = "O|" .. db.owned[i] end
   for i = 1, #db.sightings do out[#out + 1] = "S|" .. db.sightings[i] end
+  for i = 1, #(db.gold or {}) do out[#out + 1] = "G|" .. db.gold[i] end
   for k, v in pairs(db.debug) do out[#out + 1] = ns.Row("D", k, v) end
   if ns.LootLines then ns.LootLines(out) end
   return out
@@ -32,6 +33,7 @@ local exportFrame
 
 function ns.ShowExport()
   local code = ns.BuildExport()
+  ns.db.exportedAt = time()          -- so the window can say how much is new since the last upload code
   if not exportFrame then
     local f = CreateFrame("Frame", "WowfahLedgerExport", UIParent)
     f:SetSize(520, 320)
