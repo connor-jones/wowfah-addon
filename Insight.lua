@@ -75,7 +75,23 @@ function ns.SitePrice(itemID)
   if time() - t.at > 36 * 3600 then return nil end
   local p = t.p[itemID]
   if type(p) == "number" and p > 0 then return p, t.at end
+  -- { market, lowest, sold a day }
+  if type(p) == "table" and type(p[1]) == "number" and p[1] > 0 then return p[1], t.at, p[2], p[3] end
   return nil
+end
+
+-- what a vendor pays for one, or nil
+function ns.VendorPrice(itemID)
+  local get = (C_Item and C_Item.GetItemInfo) or GetItemInfo
+  if not get then return nil end
+  local v = select(11, ns.Try(get, itemID))
+  if type(v) == "number" and v > 0 then return v end
+  return nil
+end
+
+-- true when selling to a vendor pays at least as much as the auction house would after its 5% cut
+function ns.VendorBeats(market, vendor)
+  return type(market) == "number" and type(vendor) == "number" and vendor > 0 and market * 0.95 <= vendor
 end
 
 -- ---- how long ago, in a few characters ----
@@ -174,4 +190,77 @@ end
 
 function ns.InvalidateInsight()
   stats, seen = nil, nil
+end
+
+-- ---- what the bags are worth: { total at market after the cut, total at a vendor, vendorBetter = { {name, qty, vendor each} }, priced, unpriced } ----
+-- items: a list of { id, qty }, read from the bags by ns.BagItems (kept apart so it can be tested without a game)
+function ns.Appraise(items)
+  local out = { market = 0, vendor = 0, priced = 0, unpriced = 0, vendorBetter = {}, top = {} }
+  local seen = {}
+  for _, it in ipairs(items or {}) do
+    if it.id and it.qty and it.qty > 0 then
+      seen[it.id] = (seen[it.id] or 0) + it.qty
+    end
+  end
+  for id, qty in pairs(seen) do
+    local market = ns.SitePrice(id)
+    local vendor = ns.VendorPrice(id)
+    if vendor then out.vendor = out.vendor + vendor * qty end
+    if market then
+      out.priced = out.priced + 1
+      if ns.VendorBeats(market, vendor) then
+        out.market = out.market + vendor * qty
+        out.vendorBetter[#out.vendorBetter + 1] = { id = id, qty = qty, each = vendor }
+      else
+        out.market = out.market + market * 0.95 * qty
+        out.top[#out.top + 1] = { id = id, qty = qty, each = market, total = market * 0.95 * qty }
+      end
+    else
+      out.unpriced = out.unpriced + 1
+    end
+  end
+  table.sort(out.top, function(a, b) return a.total > b.total end)
+  table.sort(out.vendorBetter, function(a, b) return a.each * a.qty > b.each * b.qty end)
+  return out
+end
+
+function ns.BagItems()
+  local list = {}
+  if not (C_Container and C_Container.GetContainerNumSlots and C_Container.GetContainerItemInfo) then return list end
+  for bag = 0, 5 do
+    local n = ns.Try(C_Container.GetContainerNumSlots, bag) or 0
+    for slot = 1, n do
+      local info = ns.Try(C_Container.GetContainerItemInfo, bag, slot)
+      -- soulbound things cannot be auctioned, so they are left out
+      if type(info) == "table" and info.itemID and not info.isBound then
+        list[#list + 1] = { id = info.itemID, qty = tonumber(info.stackCount) or 1 }
+      end
+    end
+  end
+  return list
+end
+
+local function itemName(id)
+  local get = (C_Item and C_Item.GetItemInfo) or GetItemInfo
+  return (get and ns.Try(get, id)) or ("item " .. id)
+end
+
+function ns.PrintBags()
+  if not ns.SitePrice or type(WowfahPrices) ~= "table" then
+    ns.Print("No market prices yet. They come from the wowfah Sync app: wowfah.com/addon")
+    return
+  end
+  local a = ns.Appraise(ns.BagItems())
+  ns.Print(string.format("Your bags: about %s at the auction house after the cut (%d kinds of item priced).", ns.Coins(a.market), a.priced))
+  for i = 1, math.min(5, #a.top) do
+    local t = a.top[i]
+    ns.Print(string.format("  %s x%d: %s", itemName(t.id), t.qty, ns.Coins(t.total)))
+  end
+  if #a.vendorBetter > 0 then
+    ns.Print("Better sold to a vendor:")
+    for i = 1, math.min(5, #a.vendorBetter) do
+      local t = a.vendorBetter[i]
+      ns.Print(string.format("  %s x%d: %s", itemName(t.id), t.qty, ns.Coins(t.each * t.qty)))
+    end
+  end
 end

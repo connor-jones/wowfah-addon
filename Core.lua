@@ -3,7 +3,7 @@
 -- Other players' names are never stored.
 
 local ADDON, ns = ...
-ns.VERSION = "0.7.0"
+ns.VERSION = "0.8.0"
 ns.SEP = "|"
 
 local MAX_SIGHTINGS, MAX_OWNED, MAX_POSTINGS, MAX_SEEN, MAX_EVENTS, MAX_GOLD = 4000, 400, 300, 400, 20000, 600
@@ -281,8 +281,10 @@ SlashCmdList["WOWFAH"] = function(msg)
       ns.ShowMinimapButton(ns.db.minimap and ns.db.minimap.hide and true or false)
       ns.Print("The minimap button is now " .. (ns.db.minimap.hide and "hidden. Type /wowfah minimap to bring it back." or "shown."))
     end
+  elseif msg == "bags" then
+    if ns.PrintBags then ns.PrintBags() end
   elseif msg == "help" then
-    ns.Print("/wowfah (open the ledger), /sync (save and upload with the wowfah Sync app), /wowfah export (manual upload code), /wowfah path, /wowfah share on|off, /wowfah loot on|off, /wowfah minimap, /wowfah debug")
+    ns.Print("/wowfah (open the ledger), /sync (save and upload with the wowfah Sync app), /wowfah bags (what your bags are worth), /wowfah export (manual upload code), /wowfah path, /wowfah share on|off, /wowfah loot on|off, /wowfah minimap, /wowfah debug")
   else
     if ns.ToggleUI then ns.ToggleUI() end
   end

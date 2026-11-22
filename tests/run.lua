@@ -330,6 +330,26 @@ WowfahPrices = { at = time() - 3600, p = { [3860] = 1090 } }
 check("site price shown when the Sync app left one", ns2.SitePrice(3860), 1090)
 WowfahPrices.at = time() - 3 * 86400
 check("a stale site price is not shown", ns2.SitePrice(3860), nil)
+WowfahPrices = { at = time() - 1800, p = { [3860] = { 1090, 1000, 42 }, [2589] = { 20, 18, 900 } } }
+do
+  local m, at, low, sold = ns2.SitePrice(3860)
+  check("house price list: market", m, 1090)
+  check("house price list: lowest", low, 1000)
+  check("house price list: sold a day", sold, 42)
+end
+check("vendor beats auction when the cut eats the difference", ns2.VendorBeats(20, 19), true)
+check("vendor does not beat a clearly higher market", ns2.VendorBeats(1090, 500), false)
+check("no vendor price, no verdict", ns2.VendorBeats(1090, nil), false)
+do
+  local oldVendor = ns2.VendorPrice
+  ns2.VendorPrice = function(id) return ({ [3860] = 500, [2589] = 19 })[id] end
+  local a = ns2.Appraise({ { id = 3860, qty = 2 }, { id = 2589, qty = 20 }, { id = 2589, qty = 20 }, { id = 99999, qty = 1 } })
+  check("bags: two kinds priced", a.priced, 2)
+  check("bags: one kind without a price", a.unpriced, 1)
+  check("bags: cloth goes to the vendor", a.vendorBetter[1] and a.vendorBetter[1].qty, 40)
+  check("bags: worth is market after the cut plus vendor for the rest", math.floor(a.market + 0.5), math.floor(1090 * 0.95 * 2 + 19 * 40 + 0.5))
+  ns2.VendorPrice = oldVendor
+end
 WowfahPrices = nil
 local tipLines = {}
 local fakeTip = { AddDoubleLine = function(_, a, b) tipLines[#tipLines + 1] = a .. "=" .. b end, Show = function() end }

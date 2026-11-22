@@ -19,8 +19,14 @@ function ns.ItemLines(itemID)
   if s and s.boughtQty > 0 then out[#out + 1] = { "You paid", each(s.boughtGross / s.boughtQty, nil, s.boughtQty .. " bought") } end
   local low, at = ns.LastSeen(itemID)
   if low then out[#out + 1] = { "Lowest you saw", each(low, at) } end
-  local site, siteAt = ns.SitePrice(itemID)
-  if site then out[#out + 1] = { "wowfah market", each(site, siteAt) } end
+  local site, siteAt, lowest, sold = ns.SitePrice(itemID)
+  if site then
+    out[#out + 1] = { "Market price", each(site, siteAt) }
+    if lowest and lowest > 0 and lowest ~= site then out[#out + 1] = { "Lowest listed", ns.Coins(lowest) } end
+    if sold and sold > 0 then out[#out + 1] = { "Sold a day", "about " .. sold } end
+    local vendor = ns.VendorPrice(itemID)
+    if ns.VendorBeats(site, vendor) then out[#out + 1] = { "Vendor pays more", ns.Coins(vendor) .. " each" } end
+  end
   return out
 end
 
@@ -71,8 +77,11 @@ function ns.PostingLine(itemID)
   if s and s.boughtQty > 0 then parts[#parts + 1] = "you paid " .. ns.Coins(s.boughtGross / s.boughtQty) end
   local low, at = ns.LastSeen(itemID)
   if low then parts[#parts + 1] = "lowest you saw " .. ns.Coins(low) .. " (" .. ns.Ago(at) .. ")" end
-  local site = ns.SitePrice(itemID)
-  if site then parts[#parts + 1] = "wowfah market " .. ns.Coins(site) end
+  local site, _, lowest = ns.SitePrice(itemID)
+  if site then parts[#parts + 1] = "market " .. ns.Coins(site) end
+  if lowest and lowest > 0 then parts[#parts + 1] = "lowest listed " .. ns.Coins(lowest) .. " (matching it sells first)" end
+  local vendor = ns.VendorPrice(itemID)
+  if site and ns.VendorBeats(site, vendor) then parts[#parts + 1] = "a vendor pays more: " .. ns.Coins(vendor) end
   return table.concat(parts, "  |cff7d8a80/|r  ")
 end
 

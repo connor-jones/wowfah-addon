@@ -1,4 +1,4 @@
-WFL0:V|1|0.7.0|0|1794754460||4a208000b000
+WFL0:V|1|0.8.0|0|1794754460||4a208000b000
 C|Thrall-ForeverPvE1|3|Horde|1|0|0|18|1794754460
 E|posted|1794750000|Thrall-ForeverPvE1|12640|Lionheart Helm|1|4500000|150|0|0|555001|1454
 E|posted|1794750000|Thrall-ForeverPvE1|3860|Mithril Bar|20|22000|100|0|0|555002|1454
@@ -25,27 +25,27 @@ O|9002|3860|1794754460|Thrall-ForeverPvE1|1454|1000|20
 S|1794754460|Thrall-ForeverPvE1|1454|3860|1085|4652
 G|1794754460|Thrall-ForeverPvE1|1234567
 G|1794754460|Thrall-ForeverPvE1|1300000
-D|project|18
 D|UnitFullName|Thrall / ForeverPvE1
-D|soldMessages|1
+D|UnitName|Thrall / nil
 D|GetNormalizedRealmName|ForeverPvE1
-D|region|3
-D|faction|Horde
-D|rules|pvp=1 rp=0 hc=0
-D|map|1454
-D|npc|Thrall / none
+D|GetRealmName|Forever PvE 1
 D|sightings|1
-D|time|1794754460
-D|owned|7
-D|lastInvoice|buyer Murloc Skin Bag 1998 0 0 0 1
-D|zone|The Barrens / The Crossroads
-D|lootApis|GetLootSourceInfo=yes GetLootSlotLink=yes GetLootSlotInfo=yes GetLootSlotType=yes IsFishingLoot=yes GetMerchantItemID=yes GetMerchantItemInfo=yes GetQuestItemLink=yes GetInstanceInfo=yes UnitClassification=yes C_MerchantFrame=no
+D|soldMessages|1
 D|apis|C_AuctionHouse=yes PostItem=yes PostCommodity=yes GetOwnedAuctionInfo=yes GetBrowseResults=yes GetInboxInvoiceInfo=yes C_EncodingUtil=no C_GameRules=yes legacyPostAuction=no
 D|subjects|expired=Auction expired: %s removed=Auction cancelled: %s sold=nil won=nil
-D|lastError|
-D|GetRealmName|Forever PvE 1
 D|lastAH|1794754460 1454 The Barrens The Crossroads Thrall 
-D|UnitName|Thrall / nil
+D|map|1454
+D|region|3
+D|lastError|
 D|build|1.60.1 70938 toc 16001
-D|events|15
+D|zone|The Barrens / The Crossroads
 D|loot|nil install=4a208000b000
+D|events|15
+D|owned|7
+D|project|18
+D|npc|Thrall / none
+D|time|1794754460
+D|lootApis|GetLootSourceInfo=yes GetLootSlotLink=yes GetLootSlotInfo=yes GetLootSlotType=yes IsFishingLoot=yes GetMerchantItemID=yes GetMerchantItemInfo=yes GetQuestItemLink=yes GetInstanceInfo=yes UnitClassification=yes C_MerchantFrame=no
+D|lastInvoice|buyer Murloc Skin Bag 1998 0 0 0 1
+D|faction|Horde
+D|rules|pvp=1 rp=0 hc=0

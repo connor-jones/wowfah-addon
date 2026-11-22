@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.8.0
+
+- New: **market prices on every item tooltip**, for your own auction house, when the wowfah Sync app is running. Each
+  tooltip shows the market price, the lowest listing and roughly how many sell a day. Prices come from wowfah.com and
+  refresh about every half hour; type `/reload` to load the newest list.
+- New: **"Vendor pays more"** appears on a tooltip when a vendor would pay at least as much as the auction house after
+  its 5% cut.
+- New: `/wowfah bags` adds up what your bags would fetch at the auction house and lists what is better sold to a vendor.
+- The line beside the price box when you post now shows the market price and the lowest listing. In WoW Forever the
+  newest listing at a price sells first, so matching the lowest price works as well as undercutting it.
+
 ## 0.7.0
 
 - New: **your own prices on item tooltips**. Hover any item to see what you sold it for, what you paid, and the lowest
