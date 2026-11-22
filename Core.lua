@@ -71,6 +71,7 @@ function ns.InitDB()
   db.sightings = db.sightings or {}-- prices seen while you browse
   db.seen = db.seen or {}          -- fingerprints of mail already recorded
   db.gold = db.gold or {}          -- your gold at login and logout: "time|character|copper"
+  if db.guildReply == nil then db.guildReply = false end     -- answering price questions in guild chat is off until asked for
   if db.tips == nil then db.tips = true end     -- your own prices on item tooltips
   db.debug = db.debug or {}
   ns.db = db
@@ -283,8 +284,13 @@ SlashCmdList["WOWFAH"] = function(msg)
     end
   elseif msg == "bags" then
     if ns.PrintBags then ns.PrintBags() end
+  elseif msg == "crafts" or msg == "craft" then
+    if ns.PrintCrafts then ns.PrintCrafts() end
+  elseif msg == "guild on" or msg == "guild off" then
+    ns.db.guildReply = (msg == "guild on")
+    ns.Print("Answering price questions in guild chat is now " .. (ns.db.guildReply and "on. Guild members ask with a question mark and an item link." or "off."))
   elseif msg == "help" then
-    ns.Print("/wowfah (open the ledger), /sync (save and upload with the wowfah Sync app), /wowfah bags (what your bags are worth), /wowfah export (manual upload code), /wowfah path, /wowfah share on|off, /wowfah loot on|off, /wowfah minimap, /wowfah debug")
+    ns.Print("/wowfah (open the ledger), /sync (save and upload with the wowfah Sync app), /wowfah bags (what your bags are worth), /wowfah crafts (profit for the open profession), /wowfah guild on|off (answer price questions in guild chat), /wowfah export (manual upload code), /wowfah path, /wowfah share on|off, /wowfah loot on|off, /wowfah minimap, /wowfah debug")
   else
     if ns.ToggleUI then ns.ToggleUI() end
   end

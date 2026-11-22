@@ -131,6 +131,7 @@ function ns.RefreshUI()
     ns.Colour(window.hint, C.dim)
   end
   if window.tips then window.tips:SetChecked(ns.db.tips and true or false) end
+  if window.guild then window.guild:SetChecked(ns.db.guildReply and true or false) end
   window.share:SetChecked(ns.db.share and true or false)
   if window.loot then window.loot:SetChecked(ns.db.lootShare == true) end
   if window.mini then window.mini:SetChecked(not (ns.db.minimap and ns.db.minimap.hide)) end
@@ -306,10 +307,12 @@ local function build()
   f.mini:SetPoint("TOPLEFT", 8, -86)
   f.tips = ns.Check(settings, "Show prices on item tooltips and when I post an auction", function(on) ns.db.tips = on end)
   f.tips:SetPoint("TOPLEFT", 8, -112)
+  f.guild = ns.Check(settings, "Answer price questions in guild chat (a question mark and an item link)", function(on) ns.db.guildReply = on end)
+  f.guild:SetPoint("TOPLEFT", 8, -138)
   local note = ns.Text(settings, "small", C.dim)
-  note:SetPoint("TOPLEFT", 14, -146)
-  note:SetWidth(W - 60)
-  note:SetText("Nothing leaves your computer until you upload. Manual upload gives a code to paste on the site and needs nothing else. Save and sync needs the wowfah Sync app. The Upload button gives you a code to paste instead.")
+  note:SetPoint("TOPLEFT", 14, -170)
+  note:SetWidth(W - 150)
+  note:SetText("Nothing leaves your computer until you upload. Manual upload gives a code to paste on the site and needs nothing else. Save and sync needs the wowfah Sync app.")
   local done = ns.Button(settings, "Done", 80, function() settings:Hide() end)
   done:SetPoint("BOTTOMRIGHT", -10, 10)
   f.settings = settings

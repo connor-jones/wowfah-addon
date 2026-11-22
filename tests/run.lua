@@ -367,6 +367,64 @@ ns2._tooltip.add(fakeTip, 3860)
 check("tooltip lines can be switched off", #tipLines, 2)
 WowfahLedgerDB.tips = true
 check("posting line names your last sale", ns2.PostingLine(3860):match("^Your last sale ") ~= nil, true)
+-- 0.9.0: the cut by house, what you keep when posting, crafting profit, guild price answers
+WowfahPrices = { at = time() - 1800, house = "EU Normal Horde", p = { [3860] = { 1090, 1000, 42 }, [3858] = { 400, 380, 300 }, [2589] = { 20, 18, 900 } } }
+check("the seller keeps 95% at a faction house", ns2.Keep(), 0.95)
+check("posting line says what you keep", ns2.PostingLine(3860):find("you keep ", 1, true) ~= nil, true)
+do
+  local p = ns2.CraftProfit({ out = 3860, qty = 1, reagents = { { id = 3858, qty = 2 } } })
+  check("craft: materials at market", p and p.cost, 800)
+  check("craft: profit after the cut", p and p.profit, 1090 * 0.95 - 800)
+  check("craft: nothing missing", p and p.missing, 0)
+  p = ns2.CraftProfit({ out = 3860, qty = 2, reagents = { { id = 3858, qty = 2 }, { id = 4444, qty = 1 } } })
+  check("craft: a material without a price is counted", p and p.missing, 1)
+  check("craft: two made per craft doubles what it sells for", p and p.revenue, 1090 * 2 * 0.95)
+  check("craft: no price for the result, no answer", ns2.CraftProfit({ out = 4444, reagents = {} }), nil)
+  C_TradeSkillUI = {
+    GetAllRecipeIDs = function() return { 1, 2, 3 } end,
+    GetRecipeInfo = function(id) return { learned = id ~= 3, name = "Recipe " .. id } end,
+    GetRecipeSchematic = function(id)
+      if id == 1 then return { name = "Smelt Mithril", outputItemID = 3860, quantityMin = 1, quantityMax = 1, reagentSlotSchematics = {
+        { reagentType = 1, required = true, quantityRequired = 2, reagents = { { itemID = 3858 } } },
+        { reagentType = 0, required = false, quantityRequired = 1, reagents = { { itemID = 2589 } } } } } end
+      if id == 2 then return { name = "Cloth from bars", outputItemID = 2589, quantityMin = 1, quantityMax = 1, reagentSlotSchematics = {
+        { reagentType = 1, quantityRequired = 1, reagents = { { itemID = 3860 } } } } } end
+      return { name = "Unlearned", outputItemID = 3860, reagentSlotSchematics = { { reagentType = 1, quantityRequired = 1, reagents = { { itemID = 2589 } } } } }
+    end }
+  local r = ns2.ReadRecipe(1)
+  check("recipe: optional slots are left out", r and #r.reagents, 1)
+  local list = ns2.Crafts()
+  check("crafts: only the profitable, learned recipe", #list, 1)
+  check("crafts: it is the right one", list[1] and list[1].name, "Smelt Mithril")
+  check("recipe line shows a profit", ns2.RecipeLine(1):find("profit ", 1, true) ~= nil, true)
+  check("recipe line shows a loss", ns2.RecipeLine(2):find("loss ", 1, true) ~= nil, true)
+  C_TradeSkillUI = nil
+  check("no profession functions, no crafts", #ns2.Crafts(), 0)
+end
+do
+  local link = "|cff1eff00|Hitem:3860::::::::60:::::|h[Mithril Bar]|h|r"
+  local sent = {}
+  SendChatMessage = function(text, where) sent[#sent + 1] = where .. ":" .. text end
+  check("guild: a question is an item link after a question mark", ns2.GuildQuestion("? " .. link), 3860)
+  check("guild: ordinary chat is not a question", ns2.GuildQuestion("anyone selling " .. link .. "?"), nil)
+  check("guild: off by default", ns2.OnGuildChat("?" .. link), nil)
+  WowfahLedgerDB.guildReply = true
+  local text = ns2.OnGuildChat("?" .. link)
+  check("guild: one line with the prices", text, link .. ": market 10s 90c, lowest 10s 0c, about 42 sold a day, 30 min ago (wowfah)")
+  check("guild: it went to guild chat", sent[1], "GUILD:" .. tostring(text))
+  check("guild: no website in the answer", tostring(text):find("%.com") , nil)
+  check("guild: the same question is not answered twice in a minute", ns2.OnGuildChat("?" .. link), nil)
+  local other = "|cff1eff00|Hitem:3858::::|h[Mithril Ore]|h|r"
+  ns2.OnGuildChat(other .. ": market 4s 0c (wowfah)")
+  now = now + 10
+  check("guild: quiet when another player already answered", ns2.OnGuildChat("? " .. other), nil)
+  check("guild: no price, no answer", ns2.OnGuildChat("? |cffffffff|Hitem:4444::::|h[Thing]|h|r"), nil)
+  check("guild: nothing else was sent", #sent, 1)
+  WowfahLedgerDB.guildReply = false
+end
+WowfahPrices.house = "EU Normal Blackwater"
+check("the seller keeps 85% at Blackwater", ns2.Keep(), 0.85)
+WowfahPrices = nil
 local held = ns2.Holding()
 local heldIron
 for _, h in ipairs(held) do if h.id == 4306 then heldIron = h end end

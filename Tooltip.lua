@@ -80,6 +80,7 @@ function ns.PostingLine(itemID)
   local site, _, lowest = ns.SitePrice(itemID)
   if site then parts[#parts + 1] = "market " .. ns.Coins(site) end
   if lowest and lowest > 0 then parts[#parts + 1] = "lowest listed " .. ns.Coins(lowest) end
+  if site then parts[#parts + 1] = "you keep " .. ns.Coins(site * ns.Keep()) .. " each at market after the cut" end
   local vendor = ns.VendorPrice(itemID)
   if site and ns.VendorBeats(site, vendor) then parts[#parts + 1] = "a vendor pays more: " .. ns.Coins(vendor) end
   return table.concat(parts, "  |cff7d8a80/|r  ")

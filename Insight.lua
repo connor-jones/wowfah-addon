@@ -89,9 +89,17 @@ function ns.VendorPrice(itemID)
   return nil
 end
 
--- true when selling to a vendor pays at least as much as the auction house would after its 5% cut
+-- the share of a sale the seller keeps: the cut is 5% at the faction auction houses and 15% at Blackwater.
+-- The Sync app names the house the price list is for.
+function ns.Keep()
+  local t = WowfahPrices
+  if type(t) == "table" and type(t.house) == "string" and t.house:lower():find("blackwater", 1, true) then return 0.85 end
+  return 0.95
+end
+
+-- true when selling to a vendor pays at least as much as the auction house would after its cut
 function ns.VendorBeats(market, vendor)
-  return type(market) == "number" and type(vendor) == "number" and vendor > 0 and market * 0.95 <= vendor
+  return type(market) == "number" and type(vendor) == "number" and vendor > 0 and market * ns.Keep() <= vendor
 end
 
 -- ---- how long ago, in a few characters ----
@@ -212,8 +220,8 @@ function ns.Appraise(items)
         out.market = out.market + vendor * qty
         out.vendorBetter[#out.vendorBetter + 1] = { id = id, qty = qty, each = vendor }
       else
-        out.market = out.market + market * 0.95 * qty
-        out.top[#out.top + 1] = { id = id, qty = qty, each = market, total = market * 0.95 * qty }
+        out.market = out.market + market * ns.Keep() * qty
+        out.top[#out.top + 1] = { id = id, qty = qty, each = market, total = market * ns.Keep() * qty }
       end
     else
       out.unpriced = out.unpriced + 1
@@ -266,7 +274,7 @@ function ns.PrintBags()
 end
 
 -- ---- deals from the synced price list: the lowest listing is well under the market price and the item sells ----
--- { id, name, low, market, sold, off (percent below market), profit (each, after the 5% cut) }, best first.
+-- { id, name, low, market, sold, off (percent below market), profit (each, after the cut) }, best first.
 -- The list is as old as the last sync, so a deal may be gone by the time you look.
 function ns.Deals(limit)
   local out = {}
@@ -276,7 +284,7 @@ function ns.Deals(limit)
     if type(p) == "table" then
       local market, low, sold = p[1], p[2], p[3]
       if type(market) == "number" and type(low) == "number" and type(sold) == "number" and low > 0 and sold >= 5 and low <= market * 0.75 then
-        local profit = market * 0.95 - low
+        local profit = market * ns.Keep() - low
         if profit >= 100 then
           out[#out + 1] = { id = id, low = low, market = market, sold = sold, off = math.floor((1 - low / market) * 100 + 0.5),
             profit = profit, score = profit * math.min(sold, 20) }

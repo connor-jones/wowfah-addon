@@ -14,6 +14,10 @@ for your own auction house about every half hour. Type `/reload` to load the new
 - **When you post:** the same figures beside the price box, next to what you sold and paid before.
 - **Deals** view in the ledger window: listings well under the market price on items that sell every day.
 - `/wowfah bags` adds up what your bags would fetch and lists what is better sold to a vendor.
+- **Crafting profit** on the profession window for the recipe you pick, and `/wowfah crafts` for the most profitable
+  recipes you know.
+- **Guild price answers**, off by default (`/wowfah guild on`): a guild member types a question mark and an item link
+  and gets one line with the price.
 
 Without the app, tooltips still show your own sale and purchase prices and the lowest price you last browsed.
 The addon only shows prices. It never sets a price, posts, buys or cancels anything.

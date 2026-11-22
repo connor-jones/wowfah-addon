@@ -1,8 +1,8 @@
 ## Interface: 16001
 ## Title: wowfah Ledger
-## Notes: Tracks your auction house sales, purchases and fees so you can see your profit on wowfah.com.
+## Notes: Auction house prices on tooltips, deals, crafting profit and a ledger of your sales, purchases and fees. From wowfah.com.
 ## Author: wowfah.com
-## Version: 0.8.1
+## Version: 0.9.0
 ## X-Website: https://wowfah.com/addon
 ## X-License: MIT
 ## X-Curse-Project-ID: 1810693
@@ -23,6 +23,8 @@ Mail.lua
 Posting.lua
 Prices.lua
 Insight.lua
+Craft.lua
+Guild.lua
 Loot.lua
 Style.lua
 Export.lua

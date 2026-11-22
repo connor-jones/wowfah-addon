@@ -2,7 +2,7 @@
 WowfahLedgerDB = {
 	["addon"] = "0.8.1",
 	["chars"] = {
-		["Thrall-ForeverPvE1"] = "3|Horde|1|0|0|18|1794754580",
+		["Thrall-ForeverPvE1"] = "3|Horde|1|0|0|18|1794754590",
 	},
 	["debug"] = {
 		["GetNormalizedRealmName"] = "ForeverPvE1",
@@ -13,7 +13,7 @@ WowfahLedgerDB = {
 		["build"] = "1.60.1 70938 toc 16001",
 		["events"] = "15",
 		["faction"] = "Horde",
-		["lastAH"] = "1794754580|1454|The Barrens|The Crossroads|Wrahk|Creature-0-4444-1-12-3489-0000000005",
+		["lastAH"] = "1794754590|1454|The Barrens|The Crossroads|Wrahk|Creature-0-4444-1-12-3489-0000000005",
 		["lastError"] = "",
 		["lastInvoice"] = "buyer Murloc Skin Bag 1998 0 0 0 1",
 		["loot"] = "nil install=4a208000b000",
@@ -27,7 +27,7 @@ WowfahLedgerDB = {
 		["sightings"] = "1",
 		["soldMessages"] = "1",
 		["subjects"] = "expired=Auction expired: %s removed=Auction cancelled: %s sold=nil won=nil",
-		["time"] = "1794754460",
+		["time"] = "1794754470",
 		["zone"] = "The Barrens / The Crossroads",
 	},
 	["events"] = {
@@ -46,17 +46,18 @@ WowfahLedgerDB = {
 		"purchase|1794754380|Thrall-ForeverPvE1|2589|Linen Cloth|60|6715|0|0|-6715|0|1454", -- [13]
 		"purchase|1794754460|Thrall-ForeverPvE1|1470|Murloc Skin Bag|1|1998|0|0|-1998|0|1454", -- [14]
 		"purchase|1794754460|Thrall-ForeverPvE1|1470|Murloc Skin Bag|1|1998|0|0|-1998|0|1454", -- [15]
-		"sale|1794759580|Thrall-ForeverPvE1|3860|Mithril Bar|10|10000|50|500|9500|777001|1454", -- [16]
-		"purchase|1794759580|Thrall-ForeverPvE1|2589|Linen Cloth|40|800|0|0|800|0|1454", -- [17]
-		"expired|1794759580|Thrall-ForeverPvE1|2589|Linen Cloth|20|0|30|0|0|777002|1454", -- [18]
-		"posted|1794759580|Thrall-ForeverPvE1|2589|Linen Cloth|20|600|30|0|0|777003|1454", -- [19]
+		"sale|1794759590|Thrall-ForeverPvE1|3860|Mithril Bar|10|10000|50|500|9500|777001|1454", -- [16]
+		"purchase|1794759590|Thrall-ForeverPvE1|2589|Linen Cloth|40|800|0|0|800|0|1454", -- [17]
+		"expired|1794759590|Thrall-ForeverPvE1|2589|Linen Cloth|20|0|30|0|0|777002|1454", -- [18]
+		"posted|1794759590|Thrall-ForeverPvE1|2589|Linen Cloth|20|600|30|0|0|777003|1454", -- [19]
 	},
-	["exportedAt"] = 1794754580,
+	["exportedAt"] = 1794754590,
 	["gold"] = {
-		"1794754460|Thrall-ForeverPvE1|1234567", -- [1]
-		"1794754460|Thrall-ForeverPvE1|1300000", -- [2]
-		"1794754460|Thrall-ForeverPvE1|1300000", -- [3]
+		"1794754470|Thrall-ForeverPvE1|1234567", -- [1]
+		"1794754470|Thrall-ForeverPvE1|1300000", -- [2]
+		"1794754470|Thrall-ForeverPvE1|1300000", -- [3]
 	},
+	["guildReply"] = false,
 	["install"] = "4a208000b000",
 	["lootItems"] = {
 		["c:3273:1454:0:2589"] = "2|3|0",
@@ -108,7 +109,7 @@ WowfahLedgerDB = {
 		["3489:6270"] = "200|1|1|0",
 	},
 	["vendors"] = {
-		["3489:1454"] = "Wrahk|The Barrens|The Crossroads|1794754580",
+		["3489:1454"] = "Wrahk|The Barrens|The Crossroads|1794754590",
 	},
 	["welcomed"] = true,
 }

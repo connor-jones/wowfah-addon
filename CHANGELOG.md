@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.9.0
+
+- New: **crafting profit on the profession window**. Pick a recipe to see what the materials cost, what the result sells
+  for after the cut, and the profit or loss. `/wowfah crafts` lists the most profitable recipes you know in the open
+  profession. It needs the wowfah Sync app.
+- New: **price answers in guild chat**, off until you switch it on in Settings or with `/wowfah guild on`. A guild member
+  types a question mark and an item link, and one player running the addon answers with one line: market price, lowest
+  listing and how many sell a day. It never sends anything else.
+- The line beside the price box when you post now says what you keep for each one at the market price after the cut.
+- Fixed: at the Blackwater auction house the cut is 15%, not 5%. Vendor verdicts, bag value, deals and crafting profit
+  now use the cut of your own auction house.
+
 ## 0.8.1
 
 - New: a **Deals** view in the ledger window. It lists items on your auction house whose lowest listing is at least a
