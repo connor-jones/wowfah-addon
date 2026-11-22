@@ -1,4 +1,4 @@
--- The in-game ledger window: your profit for today, 7 days, 30 days and all time, then one list with six views:
+-- The in-game ledger window: your profit for today, 7 days, 30 days and all time, then one list with seven views:
 -- recent activity, items, days, characters, what you are still holding and your own auctions.
 
 local _, ns = ...
@@ -70,6 +70,12 @@ VIEWS = {
       return left(a.left), a.beaten and "Beaten" or (a.low and "Lowest" or ""),
         a.qty .. " x " .. a.name .. "   " .. ns.FormatMoney(a.each) .. " each", low, a.beaten and ns.C.down or ns.C.up,
         a.beaten and ns.C.down or ns.C.text
+    end },
+  { tab = "Deals", heads = { "BELOW", "", "ITEM", "PROFIT EACH" }, empty = "No deals in the price list. It comes from the wowfah Sync app; /reload loads the newest.",
+    rows = function() return ns.Deals() end,
+    line = function(d)
+      return d.off .. "%", "", d.name .. "   lowest " .. ns.FormatMoney(d.low) .. ", market " .. ns.FormatMoney(d.market) .. ", " .. d.sold .. " sold a day",
+        ns.FormatMoney(d.profit), ns.C.up, ns.C.up
     end },
 }
 

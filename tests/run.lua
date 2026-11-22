@@ -330,7 +330,14 @@ WowfahPrices = { at = time() - 3600, p = { [3860] = 1090 } }
 check("site price shown when the Sync app left one", ns2.SitePrice(3860), 1090)
 WowfahPrices.at = time() - 3 * 86400
 check("a stale site price is not shown", ns2.SitePrice(3860), nil)
-WowfahPrices = { at = time() - 1800, p = { [3860] = { 1090, 1000, 42 }, [2589] = { 20, 18, 900 } } }
+WowfahPrices = { at = time() - 1800, p = { [3860] = { 1090, 1000, 42 }, [2589] = { 20, 18, 900 }, [7078] = { 50000, 30000, 12 }, [7080] = { 50000, 30000, 2 } } }
+do
+  local d = ns2.Deals()
+  check("deals: one item is well under market and sells", #d, 1)
+  check("deals: it is the right one", d[1] and d[1].id, 7078)
+  check("deals: percent below market", d[1] and d[1].off, 40)
+  check("deals: profit each after the cut", d[1] and d[1].profit, 50000 * 0.95 - 30000)
+end
 do
   local m, at, low, sold = ns2.SitePrice(3860)
   check("house price list: market", m, 1090)

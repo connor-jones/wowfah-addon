@@ -264,3 +264,29 @@ function ns.PrintBags()
     end
   end
 end
+
+-- ---- deals from the synced price list: the lowest listing is well under the market price and the item sells ----
+-- { id, name, low, market, sold, off (percent below market), profit (each, after the 5% cut) }, best first.
+-- The list is as old as the last sync, so a deal may be gone by the time you look.
+function ns.Deals(limit)
+  local out = {}
+  local t = WowfahPrices
+  if type(t) ~= "table" or type(t.p) ~= "table" or type(t.at) ~= "number" or time() - t.at > 6 * 3600 then return out end
+  for id, p in pairs(t.p) do
+    if type(p) == "table" then
+      local market, low, sold = p[1], p[2], p[3]
+      if type(market) == "number" and type(low) == "number" and type(sold) == "number" and low > 0 and sold >= 5 and low <= market * 0.75 then
+        local profit = market * 0.95 - low
+        if profit >= 100 then
+          out[#out + 1] = { id = id, low = low, market = market, sold = sold, off = math.floor((1 - low / market) * 100 + 0.5),
+            profit = profit, score = profit * math.min(sold, 20) }
+        end
+      end
+    end
+  end
+  table.sort(out, function(a, b) if a.score ~= b.score then return a.score > b.score end return a.id < b.id end)
+  for i = #out, (limit or 40) + 1, -1 do out[i] = nil end
+  local get = (C_Item and C_Item.GetItemInfo) or GetItemInfo
+  for _, d in ipairs(out) do d.name = (get and ns.Try(get, d.id)) or ("item " .. d.id) end
+  return out
+end

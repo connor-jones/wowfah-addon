@@ -3,7 +3,7 @@
 -- Other players' names are never stored.
 
 local ADDON, ns = ...
-ns.VERSION = "0.8.0"
+ns.VERSION = "0.8.1"
 ns.SEP = "|"
 
 local MAX_SIGHTINGS, MAX_OWNED, MAX_POSTINGS, MAX_SEEN, MAX_EVENTS, MAX_GOLD = 4000, 400, 300, 400, 20000, 600
