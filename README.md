@@ -2,6 +2,21 @@
 
 An addon for World of Warcraft: Forever that records your auction house sales, purchases, expired and
 cancelled auctions, so you can see your profit and loss in game and on [wowfah.com](https://wowfah.com/ledger).
+With the optional wowfah Sync app it also shows market prices for your auction house on item tooltips.
+
+## Prices in game
+
+These need the wowfah Sync app (Windows and Mac, [wowfah.com/sync](https://wowfah.com/sync)), which saves a price list
+for your own auction house about every half hour. Type `/reload` to load the newest list.
+
+- **Tooltips:** market price, lowest listing and roughly how many sell a day, with "Vendor pays more" when a vendor
+  beats the auction house after its cut.
+- **When you post:** the same figures beside the price box, next to what you sold and paid before.
+- **Deals** view in the ledger window: listings well under the market price on items that sell every day.
+- `/wowfah bags` adds up what your bags would fetch and lists what is better sold to a vendor.
+
+Without the app, tooltips still show your own sale and purchase prices and the lowest price you last browsed.
+The addon only shows prices. It never sets a price, posts, buys or cancels anything.
 
 ## What it records
 
@@ -34,7 +49,7 @@ then restart the game or type `/reload`.
 - Click the wowfah button on the minimap to open the ledger. There is also a button on the auction house and the
   mailbox. `/wowfah` does the same.
 - **Manual upload** in the ledger window shows a code to paste at wowfah.com/ledger/upload. It needs nothing else.
-- **Save and sync** (or `/sync`) is for people who run the optional wowfah Sync app for Windows (wowfah.com/sync): it
+- **Save and sync** (or `/sync`) is for people who run the optional wowfah Sync app for Windows and Mac (wowfah.com/sync): it
   reloads the interface so the game saves your ledger, and the app uploads it a few seconds later. The button is
   greyed out until the app is set up on the computer.
 - `/wowfah export` shows a code to paste at wowfah.com/ledger/upload.
