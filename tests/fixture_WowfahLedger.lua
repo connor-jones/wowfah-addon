@@ -1,6 +1,6 @@
 
 WowfahLedgerDB = {
-	["addon"] = "0.8.1",
+	["addon"] = "0.10.0",
 	["auctioneers"] = {
 		["8724:1454"] = "Wrahk|The Barrens|The Crossroads|1794754590",
 	},

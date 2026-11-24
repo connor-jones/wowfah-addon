@@ -8,6 +8,8 @@ cd "$(dirname "$0")/.."
 luajit tests/run.lua
 bash -n "installer/Mac - wowfah Ledger.command"
 V=$(grep -E '^## Version:' WowfahLedger.toc | sed 's/.*: *//')
+# the version the addon reports in uploads must be the one in the .toc
+grep -q "^ns.VERSION = \"$V\"" Core.lua || { echo "Core.lua does not say version $V"; exit 1; }
 STAGE=$(mktemp -d)
 ADDON="$STAGE/clean/WowfahLedger"
 mkdir -p "$ADDON" dist
