@@ -1,6 +1,9 @@
 
 WowfahLedgerDB = {
 	["addon"] = "0.8.1",
+	["auctioneers"] = {
+		["8724:1454"] = "Wrahk|The Barrens|The Crossroads|1794754590",
+	},
 	["chars"] = {
 		["Thrall-ForeverPvE1"] = "3|Horde|1|0|0|18|1794754590",
 	},
@@ -13,7 +16,7 @@ WowfahLedgerDB = {
 		["build"] = "1.60.1 70938 toc 16001",
 		["events"] = "15",
 		["faction"] = "Horde",
-		["lastAH"] = "1794754590|1454|The Barrens|The Crossroads|Wrahk|Creature-0-4444-1-12-3489-0000000005",
+		["lastAH"] = "1794754590|1454|The Barrens|The Crossroads|Wrahk|Creature-0-4444-1-12-8724-0000000009",
 		["lastError"] = "",
 		["lastInvoice"] = "buyer Murloc Skin Bag 1998 0 0 0 1",
 		["loot"] = "nil install=4a208000b000",
@@ -31,16 +34,16 @@ WowfahLedgerDB = {
 		["zone"] = "The Barrens / The Crossroads",
 	},
 	["events"] = {
-		"posted|1794750000|Thrall-ForeverPvE1|12640|Lionheart Helm|1|4500000|150|0|0|555001|1454", -- [1]
-		"posted|1794750000|Thrall-ForeverPvE1|3860|Mithril Bar|20|22000|100|0|0|555002|1454", -- [2]
-		"posted|1794750000|Thrall-ForeverPvE1|2589|Linen Cloth|40|1000|200|0|0|555003|1454", -- [3]
+		"posted|1794750000|Thrall-ForeverPvE1|12640|Lionheart Helm|1|4500000|150|0|0|555001|1454|2", -- [1]
+		"posted|1794750000|Thrall-ForeverPvE1|3860|Mithril Bar|20|22000|100|0|0|555002|1454|2", -- [2]
+		"posted|1794750000|Thrall-ForeverPvE1|2589|Linen Cloth|40|1000|200|0|0|555003|1454|2", -- [3]
 		"sale|1794753700|Thrall-ForeverPvE1|3860|Mithril Bar|20|22000|100|1100|20900|555002|1454", -- [4]
 		"purchase|1794753780|Thrall-ForeverPvE1|4306|Silk Cloth|12|2400|0|0|-2400|0|1454", -- [5]
 		"expired|1794753780|Thrall-ForeverPvE1|2589|Linen Cloth|40|0|200|0|-200|555003|1454", -- [6]
 		"cancelled|1794754380|Thrall-ForeverPvE1|12640|Lionheart Helm|1|0|150|0|-150|555001|1454", -- [7]
 		"sale|1794754380|Thrall-ForeverPvE1|0|Mithril Bar|20|22000|100|1100|20900|0|1454", -- [8]
-		"posted|1794754380|Thrall-ForeverPvE1|10940|Strange Dust|20|3380|100|0|0|777001|1454", -- [9]
-		"posted|1794754380|Thrall-ForeverPvE1|10940|Strange Dust|83|11371|415|0|0|777002|1454", -- [10]
+		"posted|1794754380|Thrall-ForeverPvE1|10940|Strange Dust|20|3380|100|0|0|777001|1454|2", -- [9]
+		"posted|1794754380|Thrall-ForeverPvE1|10940|Strange Dust|83|11371|415|0|0|777002|1454|2", -- [10]
 		"sale|1794754380|Thrall-ForeverPvE1|10940|Strange Dust|49|6713|245|335|6378|777002|1454", -- [11]
 		"expired|1794754380|Thrall-ForeverPvE1|10940|Strange Dust|34|0|170|0|-170|777002|1454", -- [12]
 		"purchase|1794754380|Thrall-ForeverPvE1|2589|Linen Cloth|60|6715|0|0|-6715|0|1454", -- [13]
@@ -92,6 +95,9 @@ WowfahLedgerDB = {
 	},
 	["postings"] = {
 		"Strange Dust|10940|20|100|777001|1794754380|3380", -- [1]
+	},
+	["questRep"] = {
+		["870"] = "|Orgrimmar=300;Thunder Bluff=75",
 	},
 	["quests"] = {
 		["870"] = "The Forgotten Pools|10|The Barrens|4306:2|2589:1,2770:1",

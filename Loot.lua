@@ -227,6 +227,68 @@ local function readQuest()
   ns.db.quests[tostring(id)] = ns.Row(ns.Try(GetTitleText) or "", ns.Try(UnitLevel, "player") or 0, zone, rewards, choices)
 end
 
+-- auctioneers: which character opened the auction house, and where. With your own auctions posted there, the website
+-- can tell which house each auctioneer belongs to.
+local function readAuctioneer()
+  if not ns.LootOn() then return end
+  local kind, npc = ns.ParseGUID(ns.Try(UnitGUID, "npc"))
+  if kind ~= "Creature" or not npc then kind, npc = ns.ParseGUID(ns.Try(UnitGUID, "target")) end
+  if kind ~= "Creature" or not npc then return end
+  local key = npc .. ":" .. ns.MapID()
+  if not ns.db.auctioneers[key] and count(ns.db.auctioneers) >= 500 then return end
+  local zone, sub = place()
+  ns.db.auctioneers[key] = ns.Row(ns.Try(UnitName, "npc") or ns.Try(UnitName, "target") or "", zone, sub, time())
+end
+
+-- reputation gained when a quest is handed in. The game says it in a chat line just before or after the quest completes,
+-- so lines within a few seconds of the hand-in are credited to that quest.
+local repLines, lastTurnIn = {}, nil
+local repPattern
+local function repParse(msg)
+  if not repPattern then
+    local fmt = FACTION_STANDING_INCREASED or "Reputation with %s increased by %d."
+    fmt = fmt:gsub("%%%d%$", "%%")                       -- "%1$s" in some languages
+    repPattern = "^" .. fmt:gsub("([%(%)%.%+%-%*%?%[%]%^%$])", "%%%1"):gsub("%%s", "(.+)"):gsub("%%d", "(%%d+)") .. "$"
+  end
+  local a, b = tostring(msg or ""):match(repPattern)
+  if not a then return nil end
+  if tonumber(a) and not tonumber(b) then a, b = b, a end   -- a language that puts the number first
+  return a, tonumber(b)
+end
+local function creditRep(questID, faction, amount)
+  if not (questID and faction and amount and amount > 0) then return end
+  local key = tostring(questID)
+  local row = ns.db.questRep[key]
+  if not row and count(ns.db.questRep) >= 3000 then return end
+  local name = ns.Clean(faction):gsub("[=;]", " ")
+  local parts, seen = {}, false
+  for part in ((row or ""):match("^[^|]*|(.*)$") or ""):gmatch("[^;]+") do
+    if part:match("^(.-)=") == name then part = name .. "=" .. amount; seen = true end
+    parts[#parts + 1] = part
+  end
+  if not seen and #parts < 6 then parts[#parts + 1] = name .. "=" .. amount end
+  ns.db.questRep[key] = ns.Row(ns.Try(GetLocale) or "", table.concat(parts, ";"))
+end
+local function onRep(msg)
+  if not ns.LootOn() then return end
+  local faction, amount = repParse(msg)
+  if not faction then return end
+  local now = ns.Try(GetTime) or 0
+  if lastTurnIn and now - lastTurnIn.at <= 3 then creditRep(lastTurnIn.id, faction, amount); return end
+  repLines[#repLines + 1] = { faction = faction, amount = amount, at = now }
+  if #repLines > 8 then table.remove(repLines, 1) end
+end
+local function onTurnIn(questID)
+  if not ns.LootOn() or not questID or questID == 0 then return end
+  local now = ns.Try(GetTime) or 0
+  lastTurnIn = { id = questID, at = now }
+  for i = 1, #repLines do
+    if now - repLines[i].at <= 2 then creditRep(questID, repLines[i].faction, repLines[i].amount) end
+  end
+  repLines = {}
+end
+ns._rep = { parse = repParse }
+
 -- ---------------------------------------------------------------------------------------------
 -- the one-time question
 -- ---------------------------------------------------------------------------------------------
@@ -265,6 +327,8 @@ function ns.InitLoot()
   db.vendors = db.vendors or {}         -- "npc:map" -> "name|zone|subzone|seen"
   db.vendorItems = db.vendorItems or {} -- "npc:item" -> "price|stack|available|extendedCost"
   db.quests = db.quests or {}           -- questID -> "title|playerLevel|zone|rewards|choices"
+  db.auctioneers = db.auctioneers or {} -- "npc:map" -> "name|zone|subzone|seen"
+  db.questRep = db.questRep or {}       -- questID -> "locale|Faction=amount;Faction=amount"
   if not db.install then
     -- a random label for this copy of the saved file, so repeat uploads replace its counters instead of adding to them
     local seed = (time() % 100000) * 1000 + math.floor(((ns.Try(GetTime) or 0) * 1000) % 1000)
@@ -289,6 +353,9 @@ ns.On("LOOT_OPENED", readLoot)
 ns.On("LOOT_CLOSED", function() windowDone = false end)
 ns.On("MERCHANT_SHOW", readMerchant)
 ns.On("QUEST_COMPLETE", readQuest)
+ns.On("AUCTION_HOUSE_SHOW", readAuctioneer)
+ns.On("QUEST_TURNED_IN", onTurnIn)
+ns.On("CHAT_MSG_COMBAT_FACTION_CHANGE", onRep)
 ns.On("PLAYER_TARGET_CHANGED", function() remember("target") end)
 ns.On("UPDATE_MOUSEOVER_UNIT", function() remember("mouseover") end)
 ns.On("NAME_PLATE_UNIT_ADDED", function(unit) if unit then remember(unit) end end)
@@ -309,7 +376,8 @@ function ns.InstallLootHooks()
   if UseContainerItem then ns.Try(hooksecurefunc, "UseContainerItem", used) end
 end
 
--- lines for the export code and for anyone reading the format: L source, I item, M vendor, N vendor item, Q quest
+-- lines for the export code and for anyone reading the format: L source, I item, M vendor, N vendor item, Q quest,
+-- A auctioneer, R reputation from a quest
 function ns.LootLines(out)
   local db = ns.db
   if not ns.LootOn() then return out end
@@ -319,5 +387,7 @@ function ns.LootLines(out)
   for key, row in pairs(db.vendors or {}) do keyed("M", key, row) end
   for key, row in pairs(db.vendorItems or {}) do keyed("N", key, row) end
   for key, row in pairs(db.quests or {}) do keyed("Q", key, row) end
+  for key, row in pairs(db.auctioneers or {}) do keyed("A", key, row) end
+  for key, row in pairs(db.questRep or {}) do keyed("R", key, row) end
   return out
 end

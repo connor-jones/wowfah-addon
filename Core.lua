@@ -118,9 +118,11 @@ end
 -- events
 -- ---------------------------------------------------------------------------------------------
 -- kind: sale | purchase | expired | cancelled | posted
-function ns.AddEvent(kind, itemID, itemName, qty, gross, deposit, cut, net, auctionID, when)
+-- extra: one more field at the end of the row. A posting puts the auction length there (1, 2 or 3: shortest to longest).
+function ns.AddEvent(kind, itemID, itemName, qty, gross, deposit, cut, net, auctionID, when, extra)
   local row = ns.Row(kind, when or time(), ns.charKey or ns.CharKey(), itemID or 0, itemName or "", qty or 1,
     gross or 0, deposit or 0, cut or 0, net or 0, auctionID or 0, ns.MapID())
+  if extra ~= nil then row = row .. ns.SEP .. ns.Clean(extra) end
   table.insert(ns.db.events, row)
   if ns.InvalidateData then ns.InvalidateData() end
   if ns.RefreshUI then ns.RefreshUI() end

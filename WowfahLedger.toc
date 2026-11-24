@@ -2,7 +2,7 @@
 ## Title: wowfah Ledger
 ## Notes: Auction house prices on tooltips, deals, crafting profit and a ledger of your sales, purchases and fees. From wowfah.com.
 ## Author: wowfah.com
-## Version: 0.9.0
+## Version: 0.10.0
 ## X-Website: https://wowfah.com/addon
 ## X-License: MIT
 ## X-Curse-Project-ID: 1810693

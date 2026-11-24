@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.10.0
+
+- Postings now record the auction length you chose, so wowfah.com can work out which length pays which deposit.
+- If you share what drops where, the addon also notes which auctioneer you opened the auction house at, and the
+  reputation a quest gave when you handed it in. No character names are recorded. `/wowfah loot off` stops all of it.
+
 ## 0.9.0
 
 - New: **crafting profit on the profession window**. Pick a recipe to see what the materials cost, what the result sells

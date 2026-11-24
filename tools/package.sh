@@ -37,7 +37,8 @@ perl -pi -e 's/\r?\n/\r\n/' "$TOP/READ ME FIRST.txt"
 mv "$STAGE/full.zip" "dist/wowfah-ledger-$V.zip"
 rm -rf "$STAGE"
 WEB=../web/static/downloads
-if [ -d ../web/static ]; then
+# WOWFAH_NO_PUBLISH=1 builds the zips without putting them on the website: for a version still being tested in game
+if [ -d ../web/static ] && [ -z "${WOWFAH_NO_PUBLISH:-}" ]; then
   mkdir -p "$WEB"
   rm -f "$WEB"/WowfahLedger-*.zip "$WEB"/wowfah-ledger-*.zip
   cp "dist/wowfah-ledger-$V.zip" "$WEB/wowfah-ledger-$V.zip"

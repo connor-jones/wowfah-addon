@@ -163,6 +163,8 @@ fire("AUCTION_HOUSE_AUCTION_CREATED", 555002)
 C_AuctionHouse.PostCommodity({ id = 2589, name = "Linen Cloth" }, 2, 40, 25)
 fire("AUCTION_HOUSE_AUCTION_CREATED", 555003)
 check("posted events", #events("posted"), 3)
+check("posting carries the auction length", events("posted")[1][13], "2")
+check("auction id still lands in its field", events("posted")[1][11], "555001")
 check("posting keeps auction id", WowfahLedgerDB.postings[2]:match("^Mithril Bar|3860|20|100|555002|") ~= nil, true)
 check("commodity total", events("posted")[2][7], "22000")
 
@@ -558,6 +560,19 @@ check("vendor limited stock", db.vendorItems["3489:6270"], "200|1|1|0")
 quest = { id = 870, title = "The Forgotten Pools", rewards = { { id = 4306, qty = 2 } }, choices = { { id = 2589 }, { id = 2770 } } }
 fire("QUEST_COMPLETE")
 check("quest rewards", db.quests["870"], "The Forgotten Pools|10|The Barrens|4306:2|2589:1,2770:1")
+-- reputation said just before and just after the hand-in is credited to the quest; a later line is not
+check("reputation line read", select(2, ns._rep.parse("Reputation with Orgrimmar increased by 250.")), 250)
+check("other chat is not reputation", ns._rep.parse("You are now Friendly with Orgrimmar."), nil)
+fire("CHAT_MSG_COMBAT_FACTION_CHANGE", "Reputation with Orgrimmar increased by 250.")
+fire("QUEST_TURNED_IN", 870, 1200, 0)
+fire("CHAT_MSG_COMBAT_FACTION_CHANGE", "Reputation with Thunder Bluff increased by 75.")
+check("quest reputation", (db.questRep["870"] or ""):match("|(.*)$"), "Orgrimmar=250;Thunder Bluff=75")
+fire("CHAT_MSG_COMBAT_FACTION_CHANGE", "Reputation with Orgrimmar increased by 300.")
+check("same faction replaces, not repeats", (db.questRep["870"] or ""):match("|(.*)$"), "Orgrimmar=300;Thunder Bluff=75")
+-- the auctioneer whose window was opened
+units.npc = { guid = creature(8724, 9) }
+fire("AUCTION_HOUSE_SHOW")
+check("auctioneer row", db.auctioneers["8724:1454"] ~= nil, true)
 -- export carries the loot only while sharing is on
 local lines = table.concat(ns.BuildLines(), "\n")
 check("export header has loot flag and install", lines:match("^V|1|[%d%.]+|%d|%d+|1|(%x+)"), db.install)
